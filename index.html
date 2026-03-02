@@ -675,7 +675,14 @@ body::before {
       <button class="btn-primary" onclick="addProduct()">✓ Save Product</button>
     </div>
 
-    <div class="section-title">◈ All Products</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+      <div class="section-title" style="margin-bottom:0;flex:1">◈ All Products</div>
+      <label style="background:linear-gradient(135deg,#0a1e40,#0d2a5e);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;" title="Import Excel file">
+        📊 Import Excel
+        <input type="file" accept=".xlsx,.xls,.xlsm,.csv" style="display:none" onchange="importExcel(this)">
+      </label>
+      <button onclick="resetToExcel()" style="background:rgba(244,63,94,0.1);color:#e11d48;border:1px solid rgba(244,63,94,0.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;">🔄 Reset</button>
+    </div>
     <div class="search-box">
       <span class="search-icon">🔍</span>
       <input placeholder="Search products..." id="searchInput" oninput="renderProducts()">
@@ -689,7 +696,9 @@ body::before {
       <div class="form-title">🛒 New Purchase Entry</div>
       <div class="form-group">
         <label class="form-label">Vendor / Supplier Name</label>
-        <input class="form-input" id="purVendor" placeholder="Enter vendor name">
+        <input class="form-input" id="purVendor" list="vendorList" placeholder="Type or select vendor..." autocomplete="off">
+        <datalist id="vendorList"></datalist>
+        <div style="font-size:10px;color:var(--sky);margin-top:4px;letter-spacing:0.5px;">✅ New vendor will be auto-saved</div>
       </div>
       <div class="form-group">
         <label class="form-label">Select Product</label>
@@ -724,7 +733,9 @@ body::before {
       <div class="form-title">💰 New Sale Entry</div>
       <div class="form-group">
         <label class="form-label">Customer Name</label>
-        <input class="form-input" id="saleCust" placeholder="Enter customer name">
+        <input class="form-input" id="saleCust" list="customerList" placeholder="Type or select customer..." autocomplete="off">
+        <datalist id="customerList"></datalist>
+        <div style="font-size:10px;color:var(--green);margin-top:4px;letter-spacing:0.5px;">✅ New customer will be auto-saved</div>
       </div>
       <div class="form-group">
         <label class="form-label">Select Product</label>
@@ -844,12 +855,54 @@ window.addEventListener('load', () => {
   }, 3600);
 });
 
+// ===== EXCEL PRE-LOADED DATA =====
+const EXCEL_PRODUCTS = [{"id": 1700000000000, "name": "STREET LIGHT 36WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 900, "sellPrice": 1035, "stock": 24, "minStock": 5}, {"id": 1700000000001, "name": "HALOGEN ROD (VIVID)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 24, "minStock": 5}, {"id": 1700000000002, "name": "HALOGEN ROD (HALONIX) 500WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 30, "minStock": 5}, {"id": 1700000000003, "name": "PANEL LIGHT 20W (WIPRO)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 29, "minStock": 5}, {"id": 1700000000004, "name": "LUGS COPPER 2.5 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 3, "sellPrice": 3, "stock": 1200, "minStock": 5}, {"id": 1700000000005, "name": "LUGS COPPER 16 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 12, "sellPrice": 14, "stock": 258, "minStock": 5}, {"id": 1700000000006, "name": "LUGS COPPER 25 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 33, "sellPrice": 38, "stock": 161, "minStock": 5}, {"id": 1700000000007, "name": "LUGS COPPER 25 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 103, "minStock": 5}, {"id": 1700000000008, "name": "LUGS COPPER 35 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 38, "sellPrice": 44, "stock": 206, "minStock": 5}, {"id": 1700000000009, "name": "LUGS COPPER 35 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 161, "minStock": 5}, {"id": 1700000000010, "name": "LUGS COPPER 50 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 65, "sellPrice": 75, "stock": 92, "minStock": 5}, {"id": 1700000000011, "name": "LUGS COPPER 70 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 82, "sellPrice": 94, "stock": 111, "minStock": 5}, {"id": 1700000000012, "name": "LUGS COPPER 95 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 100, "sellPrice": 115, "stock": 252, "minStock": 5}, {"id": 1700000000013, "name": "LUGS COPPER 95 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 76, "minStock": 5}, {"id": 1700000000014, "name": "LUGS COPPER 120 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 210, "sellPrice": 241, "stock": 123, "minStock": 5}, {"id": 1700000000015, "name": "LUGS COPPER 120 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 190, "minStock": 5}, {"id": 1700000000016, "name": "LUGS COPPER 150 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 95, "minStock": 5}, {"id": 1700000000017, "name": "LUGS COPPER 185 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 103, "minStock": 5}, {"id": 1700000000018, "name": "LUGS COPPER 225 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000019, "name": "LUGS COPPER 240 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 29, "minStock": 5}, {"id": 1700000000020, "name": "LUGS COPPER 300 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 560, "sellPrice": 644, "stock": 51, "minStock": 5}, {"id": 1700000000021, "name": "LUGS COPPER 400 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 200, "sellPrice": 230, "stock": 21, "minStock": 5}, {"id": 1700000000022, "name": "LUGS ALU. 06 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 20, "minStock": 5}, {"id": 1700000000023, "name": "LUGS ALU. 10 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 70, "minStock": 5}, {"id": 1700000000024, "name": "LUGS ALU. 16 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 110, "minStock": 5}, {"id": 1700000000025, "name": "LUGS ALU. 16 SQMM (बड़ा होल)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 97, "minStock": 5}, {"id": 1700000000026, "name": "LUGS ALU. 25 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 7, "sellPrice": 8, "stock": 302, "minStock": 5}, {"id": 1700000000027, "name": "LUGS ALU. 35 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 10, "sellPrice": 12, "stock": 231, "minStock": 5}, {"id": 1700000000028, "name": "LUGS ALU. 50 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 46, "minStock": 5}, {"id": 1700000000029, "name": "LUGS ALU. 70 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 27, "sellPrice": 31, "stock": 151, "minStock": 5}, {"id": 1700000000030, "name": "LUGS ALU. 95 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 57, "minStock": 5}, {"id": 1700000000031, "name": "LUGS ALU. 120 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 38, "sellPrice": 44, "stock": 90, "minStock": 5}, {"id": 1700000000032, "name": "LUGS ALU. 150 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 25, "minStock": 5}, {"id": 1700000000033, "name": "LUGS ALU. 185 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 219, "minStock": 5}, {"id": 1700000000034, "name": "LUGS ALU. 225 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000035, "name": "LUGS ALU. 240 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 35, "minStock": 5}, {"id": 1700000000036, "name": "LUGS ALU. 300 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 130, "sellPrice": 150, "stock": 60, "minStock": 5}, {"id": 1700000000037, "name": "DC GLAND 16 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 170, "sellPrice": 195, "stock": 11, "minStock": 5}, {"id": 1700000000038, "name": "DC GLAND 19 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 210, "sellPrice": 241, "stock": 36, "minStock": 5}, {"id": 1700000000039, "name": "DC GLAND 22 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 241.4, "sellPrice": 278, "stock": 40, "minStock": 5}, {"id": 1700000000040, "name": "DC GLAND 25 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 317, "sellPrice": 365, "stock": 70, "minStock": 5}, {"id": 1700000000041, "name": "DC GLAND 28 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 394, "sellPrice": 453, "stock": 58, "minStock": 5}, {"id": 1700000000042, "name": "DC GLAND 32 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 500, "sellPrice": 575, "stock": 14, "minStock": 5}, {"id": 1700000000043, "name": "DC GLAND 35 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000044, "name": "DC GLAND 38 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 600, "sellPrice": 690, "stock": 36, "minStock": 5}, {"id": 1700000000045, "name": "DC GLAND 45 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 900, "sellPrice": 1035, "stock": 26, "minStock": 5}, {"id": 1700000000046, "name": "DC GLAND 50 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 18, "minStock": 5}, {"id": 1700000000047, "name": "DC GLAND 57 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 1200, "sellPrice": 1380, "stock": 17, "minStock": 5}, {"id": 1700000000048, "name": "DC GLAND 63 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 1600, "sellPrice": 1840, "stock": 11, "minStock": 5}, {"id": 1700000000049, "name": "DC GLAND 70 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 1700, "sellPrice": 1955, "stock": 15, "minStock": 5}, {"id": 1700000000050, "name": "DC GLAND 75 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000051, "name": "DC GLAND 82 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 2400, "sellPrice": 2760, "stock": 9, "minStock": 5}, {"id": 1700000000052, "name": "MCB 06A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 10, "minStock": 5}, {"id": 1700000000053, "name": "MCB 10A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 8, "minStock": 5}, {"id": 1700000000054, "name": "MCB 16A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 10, "minStock": 5}, {"id": 1700000000055, "name": "MCB 20A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 10, "minStock": 5}, {"id": 1700000000056, "name": "MCB 25A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 12, "minStock": 5}, {"id": 1700000000057, "name": "MCB 32A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 12, "minStock": 5}, {"id": 1700000000058, "name": "MCB 06A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 2, "minStock": 5}, {"id": 1700000000059, "name": "MCB 16A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 10, "minStock": 5}, {"id": 1700000000060, "name": "MCB 20A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 12, "minStock": 5}, {"id": 1700000000061, "name": "MCB 25A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 11, "minStock": 5}, {"id": 1700000000062, "name": "MCB 32A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 10, "minStock": 5}, {"id": 1700000000063, "name": "MCB 63A 2P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 630, "sellPrice": 724, "stock": 6, "minStock": 5}, {"id": 1700000000064, "name": "MCB 63A 3P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 1181.36, "sellPrice": 1359, "stock": 3, "minStock": 5}, {"id": 1700000000065, "name": "MCB 63A 4P L&T", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000066, "name": "MCB 06A 2P L&T", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000067, "name": "MCB 25A 3P LEGRAND", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000068, "name": "MCB 06A 1P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 15, "minStock": 5}, {"id": 1700000000069, "name": "MCB 16A 2P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 13, "minStock": 5}, {"id": 1700000000070, "name": "MCB 32A 4P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 6, "minStock": 5}, {"id": 1700000000071, "name": "MCB 40A 3P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000072, "name": "MCB 63A 4P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 5, "minStock": 5}, {"id": 1700000000073, "name": "RCCB 25A 2P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 43, "minStock": 5}, {"id": 1700000000074, "name": "SLEEVE 55MM (BLACK) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000075, "name": "SLEEVE 30MM (BLACK) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 4, "minStock": 5}, {"id": 1700000000076, "name": "SLEEVE 73MM (RED) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000077, "name": "SLEEVE 73MM (YELLOW) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000078, "name": "SLEEVE 81MM (GREEN) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000079, "name": "SLEEVE 27MM (BLUE) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000080, "name": "SLEEVE 73MM (BLUE) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000081, "name": "KITKAT FUSE 300AMP 415V", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 12, "minStock": 5}, {"id": 1700000000082, "name": "ELR (EARTH LEAKAGE RELAY)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 25, "minStock": 5}, {"id": 1700000000083, "name": "COMPOUND RUBBER (PUNCTURE TAPE)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 14, "minStock": 5}, {"id": 1700000000084, "name": "FAN 400RPM POLAR", "category": "Electrical", "unit": "NOS", "buyPrice": 1700, "sellPrice": 1955, "stock": 8, "minStock": 5}, {"id": 1700000000085, "name": "PUSH BUTTON (RED COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 34, "minStock": 5}, {"id": 1700000000086, "name": "PUSH BUTTON (GREEN COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 35, "minStock": 5}, {"id": 1700000000087, "name": "PUSH BUTTON (GEN NEXT) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000088, "name": "PUSH BUTTON ELEMENT (CONTACT BLOCK) (RED COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 33, "minStock": 5}, {"id": 1700000000089, "name": "PUSH BUTTON ELEMENT (CONTACT BLOCK) (GREEN COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 29, "minStock": 5}, {"id": 1700000000090, "name": "MK1 COIL 440V", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 4, "minStock": 5}, {"id": 1700000000091, "name": "HONEYWELL HARD HAT MOUNT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000092, "name": "ANALOG TIME SWITCH", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000093, "name": "ROTARY SWITCH", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 4, "minStock": 5}, {"id": 1700000000094, "name": "THERMAL OLR MN2", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 3, "minStock": 5}, {"id": 1700000000095, "name": "LED STRIP LIGHT ADAPTOR", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000096, "name": "CONTROL BOX BX3", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000097, "name": "BULB 09WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 12, "minStock": 5}, {"id": 1700000000098, "name": "BULB 20WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000099, "name": "BULB 30WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 14, "minStock": 5}, {"id": 1700000000100, "name": "BULB 40WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 5, "minStock": 5}, {"id": 1700000000101, "name": "BULB 50WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 7, "minStock": 5}, {"id": 1700000000102, "name": "BULB 15W", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 19, "minStock": 5}, {"id": 1700000000103, "name": "BULB EMERGENCY", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 5, "minStock": 5}, {"id": 1700000000104, "name": "SURFACE LIGHT 10WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000105, "name": "SURFACE LIGHT 15WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000106, "name": "ITC MAKE- 22MM/220V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 40, "minStock": 5}, {"id": 1700000000107, "name": "ITC MAKE- 22MM/220V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 40, "minStock": 5}, {"id": 1700000000108, "name": "ITC MAKE- 22MM/220V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 40, "minStock": 5}, {"id": 1700000000109, "name": "ITC MAKE- 22MM/220V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 40, "minStock": 5}, {"id": 1700000000110, "name": "ITC MAKE- 22MM/220V (WHITE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 10, "minStock": 5}, {"id": 1700000000111, "name": "ITC MAKE- 22MM ACDC 24V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000112, "name": "ITC MAKE- 22MM ACDC 24V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000113, "name": "ITC MAKE- 22MM ACDC 24V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000114, "name": "ITC MAKE- 22MM ACDC 24V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000115, "name": "ITC MAKE- 22MM 220V (LIGHT YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000116, "name": "ITC MAKE- 22MM AC415V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000117, "name": "ITC MAKE- 22MM AC415V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000118, "name": "ITC MAKE- 22MM AC415V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000119, "name": "ITC MAKE- 22MM AC415V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000120, "name": "ITC MAKE- 22MM AC415V (LIGHT YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000121, "name": "ITC MAKE- 22MM ACDC12-220V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000122, "name": "ITC MAKE- 22MM ACDC12-220V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000123, "name": "ITC MAKE- 22MM ACDC12-220V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000124, "name": "ITC MAKE- 22MM ACDC12-220V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000125, "name": "ITC MAKE- 22MM ACDC12-220V (LIGHT YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000126, "name": "ITC MAKE- 22MM ACDC12-220V (WHITE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000127, "name": "ITC MAKE- 22MM ACDC24V (WHITE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000128, "name": "ID-IDEL MAKE- 22MM ACDC 12-250V (RED, YELLOW, GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000129, "name": "ID-IDEL MAKE- 22MM ACDC 24V (RED, YELLOW, GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000130, "name": "ID-IDEL MAKE- 22MM AC 240V (RED, YELLOW, GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000131, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000132, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (ORANGE)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000133, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000134, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000135, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000136, "name": "TOOLS- PLIER 1621-8", "category": "Electrical", "unit": "NOS", "buyPrice": 239, "sellPrice": 275, "stock": 0, "minStock": 5}, {"id": 1700000000137, "name": "TOOLS- TESTER 813", "category": "Electrical", "unit": "NOS", "buyPrice": 50, "sellPrice": 57, "stock": 0, "minStock": 5}, {"id": 1700000000138, "name": "TOOLS- HEXA BLADE", "category": "Electrical", "unit": "NOS", "buyPrice": 10, "sellPrice": 12, "stock": 0, "minStock": 5}, {"id": 1700000000139, "name": "TOOLS- HEXA FRAME", "category": "Electrical", "unit": "NOS", "buyPrice": 323.64, "sellPrice": 372, "stock": 0, "minStock": 5}, {"id": 1700000000140, "name": "TOOLS- GRINDING WHEEL (BOSCH)", "category": "Electrical", "unit": "NOS", "buyPrice": 55, "sellPrice": 63, "stock": 0, "minStock": 5}, {"id": 1700000000141, "name": "CRC BOTTLE", "category": "Electrical", "unit": "NOS", "buyPrice": 450, "sellPrice": 518, "stock": 5, "minStock": 5}, {"id": 1700000000142, "name": "NAIL GUN", "category": "Electrical", "unit": "NOS", "buyPrice": 500, "sellPrice": 575, "stock": 3, "minStock": 5}, {"id": 1700000000143, "name": "NAIL REPIT", "category": "Electrical", "unit": "BOX", "buyPrice": 500, "sellPrice": 575, "stock": 16, "minStock": 5}, {"id": 1700000000144, "name": "PAD LOCK RED", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 16, "minStock": 5}, {"id": 1700000000145, "name": "PAD LOCK YELLOW", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 6, "minStock": 5}, {"id": 1700000000146, "name": "PAD LOCK GREEN", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 6, "minStock": 5}, {"id": 1700000000147, "name": "TUBE LIGHT 20WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 140, "sellPrice": 161, "stock": 106, "minStock": 5}, {"id": 1700000000148, "name": "\"0\" WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 72, "minStock": 5}, {"id": 1700000000149, "name": "GONG BELL 6\" 220V (NATIONAL)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000150, "name": "GONG BELL 24V DC ONLY (EDISON)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000151, "name": "COOLER PUMP HEAVY DUTY 2.80MTR. (APPROX 9FEET)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 36, "minStock": 5}, {"id": 1700000000152, "name": "COOLER PUMP HEAVY DUTY 1.85MTR. (APPROX 6FEET)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 30, "minStock": 5}, {"id": 1700000000153, "name": "COOLER PUMP MAKE- ELECS 1.85MTR. (APPROX 6FEET)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 30, "minStock": 5}];
+
 // ===== DATA =====
-let products = JSON.parse(localStorage.getItem('at_products') || '[]');
+let products = JSON.parse(localStorage.getItem('at_products') || 'null');
+if (!products || products.length === 0) {
+  products = EXCEL_PRODUCTS;
+  localStorage.setItem('at_products', JSON.stringify(products));
+}
 let transactions = JSON.parse(localStorage.getItem('at_transactions') || '[]');
+let vendors = JSON.parse(localStorage.getItem('at_vendors') || '[]');
+let customers = JSON.parse(localStorage.getItem('at_customers') || '[]');
+
 function save() {
   localStorage.setItem('at_products', JSON.stringify(products));
   localStorage.setItem('at_transactions', JSON.stringify(transactions));
+  localStorage.setItem('at_vendors', JSON.stringify(vendors));
+  localStorage.setItem('at_customers', JSON.stringify(customers));
+}
+
+// Auto-save vendor name
+function saveVendorName(name) {
+  name = name.trim();
+  if (name && !vendors.includes(name)) {
+    vendors.push(name);
+    localStorage.setItem('at_vendors', JSON.stringify(vendors));
+    updateVendorDatalist();
+  }
+}
+
+// Auto-save customer name
+function saveCustomerName(name) {
+  name = name.trim();
+  if (name && !customers.includes(name)) {
+    customers.push(name);
+    localStorage.setItem('at_customers', JSON.stringify(customers));
+    updateCustomerDatalist();
+  }
+}
+
+function updateVendorDatalist() {
+  const dl = document.getElementById('vendorList');
+  if (dl) dl.innerHTML = vendors.map(v => `<option value="${v}">`).join('');
+}
+
+function updateCustomerDatalist() {
+  const dl = document.getElementById('customerList');
+  if (dl) dl.innerHTML = customers.map(c => `<option value="${c}">`).join('');
 }
 
 // ===== DATE =====
@@ -943,6 +996,8 @@ function renderProducts() {
 
 // ===== FILL DROPDOWNS =====
 function fillProductDropdowns() {
+  updateVendorDatalist();
+  updateCustomerDatalist();
   ['purProduct','saleProduct'].forEach(id => {
     const sel = document.getElementById(id);
     sel.innerHTML = products.length
@@ -1081,6 +1136,58 @@ function renderReports() {
   document.getElementById('rTotalProds').textContent=products.length;
   document.getElementById('rLowStock').textContent=products.filter(p=>p.stock>0&&p.stock<=p.minStock).length;
   document.getElementById('rOutStock').textContent=products.filter(p=>p.stock<=0).length;
+}
+
+// ===== EXCEL IMPORT =====
+function importExcel(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const lines = e.target.result.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      let imported = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        if (!cols[0] || !cols[0].trim()) continue;
+        const name = cols[0].trim().replace(/['"]/g,'');
+        const qty = parseFloat(cols[1]) || 0;
+        const unit = (cols[2] || 'NOS').trim().replace(/['"]/g,'');
+        const price = parseFloat(cols[3]) || 0;
+        if (name && !products.find(p => p.name.toUpperCase() === name.toUpperCase())) {
+          products.push({
+            id: Date.now() + i,
+            name: name.toUpperCase(),
+            category: 'Imported',
+            unit: unit || 'NOS',
+            buyPrice: price,
+            sellPrice: Math.round(price * 1.15),
+            stock: qty,
+            minStock: 5
+          });
+          imported++;
+        }
+      }
+      save();
+      renderProducts();
+      showToast(`✅ ${imported} products imported!`);
+    };
+    reader.readAsText(file);
+  } else {
+    showToast('⚠️ CSV format use karein! Excel ko CSV me save karke upload karein.', '#f59e0b');
+  }
+  input.value = '';
+}
+
+function resetToExcel() {
+  if (!confirm('Kya aap chahte hain ki original Excel data restore ho jaaye?')) return;
+  products = [...EXCEL_PRODUCTS];
+  save();
+  renderProducts();
+  showToast('✅ Original Excel data restore ho gaya!');
 }
 
 // INIT
