@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0">
+<title>Anjali Traders 01 V01</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a1e40">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Anjali Traders">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #f0f4f8;
+  --dark: #e8edf3;
+  --mid: #dce4ee;
+  --card: #ffffff;
+  --card2: #f4f7fb;
+  --sky: #0ea5e9;
+  --sky2: #38bdf8;
+  --sky3: #0284c7;
+  --glow: rgba(14,165,233,0.18);
+  --text: #1e3a5f;
+  --muted: #6b8db0;
+  --green: #059669;
+  --red: #e11d48;
+  --yellow: #d97706;
+  --border: rgba(14,165,233,0.2);
+  --shadow: 0 4px 20px rgba(14,165,233,0.1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: #eef2f7;
+  color: var(--text);
+  min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Ambient background dots */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(14,165,233,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(2,132,199,0.07) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(56,189,248,0.04) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ============ SPLASH SCREEN ============ */
+#splash {
+  position: fixed; inset: 0;
+  background: linear-gradient(160deg, #0a1e40, #0d2a5e, #0ea5e9);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+  width: 100vw;
+  left: 0; right: 0;
+}
+
+.splash-bg-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(56,189,248,0.2);
+  animation: ringPulse 3s ease-in-out infinite;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.ring1 { width: 200px; height: 200px; animation-delay: 0s; }
+.ring2 { width: 320px; height: 320px; animation-delay: 0.3s; opacity: 0.6; }
+.ring3 { width: 450px; height: 450px; animation-delay: 0.6s; opacity: 0.3; }
+.ring4 { width: 600px; height: 600px; animation-delay: 0.9s; opacity: 0.15; }
+
+@keyframes ringPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.8; }
+}
+
+.splash-logo-wrap {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+
+.splash-icon {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px;
+  box-shadow: 0 0 40px rgba(56,189,248,0.5), 0 0 80px rgba(56,189,248,0.2);
+  opacity: 0;
+  animation: iconPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) 0.4s forwards;
+}
+
+@keyframes iconPop {
+  from { opacity:0; transform: scale(0.3) rotate(-10deg); }
+  to { opacity:1; transform: scale(1) rotate(0deg); }
+}
+
+.splash-title {
+  text-align: center;
+  overflow: hidden;
+}
+
+.splash-title .line1 {
+  font-family: 'Orbitron', monospace;
+  font-size: 34px; font-weight: 900;
+  color: transparent;
+  background: linear-gradient(90deg, #38bdf8, #7dd3fc, #0ea5e9, #38bdf8);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: titleReveal 0.8s ease 0.9s forwards, shimmer 3s linear 1.7s infinite;
+  display: block;
+}
+
+.splash-title .line2 {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: rgba(180,220,248,0.7);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: titleReveal 0.6s ease 1.4s forwards;
+  display: block; margin-top: 6px;
+}
+
+@keyframes titleReveal {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+.splash-bar-wrap {
+  position: relative; z-index: 2;
+  margin-top: 40px;
+  width: 200px;
+  opacity: 0;
+  animation: fadeUp 0.4s ease 1.8s forwards;
+}
+.splash-bar-track {
+  height: 3px; background: rgba(56,189,248,0.15); border-radius: 10px; overflow: hidden;
+}
+.splash-bar-fill {
+  height: 100%; width: 0; background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+  border-radius: 10px;
+  animation: loadFill 1.4s ease 2s forwards;
+  box-shadow: 0 0 10px var(--sky);
+}
+@keyframes loadFill { to { width: 100%; } }
+
+.splash-tagline {
+  position: relative; z-index: 2;
+  margin-top: 14px;
+  font-size: 11px; color: rgba(180,220,248,0.6); letter-spacing: 2px;
+  opacity: 0;
+  animation: fadeUp 0.4s ease 1.9s forwards;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+#splash.exit {
+  animation: splashExit 0.7s ease forwards;
+}
+@keyframes splashExit {
+  to { opacity: 0; transform: scale(1.05); pointer-events: none; }
+}
+
+/* ============ MAIN APP ============ */
+#app { position: relative; z-index: 1; opacity: 0; transition: opacity 0.5s ease; }
+#app.visible { opacity: 1; }
+
+/* TOPBAR */
+.topbar {
+  background: linear-gradient(180deg, #0a1e40, #0d2a5e);
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(56,189,248,0.2);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 24px rgba(10,30,64,0.25), 0 1px 0 rgba(56,189,248,0.15);
+}
+
+.topbar-left .brand {
+  font-family: 'Orbitron', monospace;
+  font-size: 15px; font-weight: 700;
+  color: #38bdf8; letter-spacing: 1.5px;
+}
+.topbar-left .sub {
+  font-size: 10px; color: rgba(180,220,248,0.6); letter-spacing: 1px; margin-top: 2px;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.top-date { font-size: 10px; color: rgba(180,220,248,0.6); text-align: right; }
+.notif-btn {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 15px; transition: background 0.2s;
+}
+.notif-btn:active { background: rgba(56,189,248,0.25); }
+
+/* NAV TABS */
+.nav-tabs {
+  display: flex; overflow-x: auto;
+  background: #ffffff;
+  border-bottom: 2px solid rgba(14,165,233,0.15);
+  scrollbar-width: none; box-shadow: 0 2px 8px rgba(14,165,233,0.08);
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: none; padding: 10px 14px;
+  font-size: 11px; font-weight: 600;
+  color: #6b8db0; background: none; border: none; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-family: 'Exo 2', sans-serif; letter-spacing: 0.8px;
+  white-space: nowrap; transition: all 0.2s; text-transform: uppercase;
+}
+.tab-btn.active { color: var(--sky); border-bottom-color: var(--sky); }
+.tab-btn:active { background: rgba(14,165,233,0.05); }
+
+/* PAGES */
+.page { display: none; padding: 16px; padding-bottom: 90px; animation: pageIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes pageIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* SECTION TITLE */
+.section-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 11px; font-weight: 700;
+  color: var(--sky); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::after {
+  content:''; flex:1; height:1px;
+  background: linear-gradient(90deg, rgba(14,165,233,0.3), transparent);
+}
+
+/* STAT CARDS */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 14px; padding: 14px;
+  border: 1px solid rgba(14,165,233,0.15);
+  position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(14,165,233,0.08);
+}
+.stat-card:active { transform: scale(0.97); }
+.stat-card::after {
+  content: attr(data-icon);
+  position: absolute; right: 8px; top: 8px;
+  font-size: 28px; opacity: 0.12;
+}
+.stat-card .glint {
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+}
+.stat-label { font-size: 10px; color: #6b8db0; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.stat-value { font-family: 'Orbitron', monospace; font-size: 24px; font-weight: 700; line-height: 1; }
+.stat-sub { font-size: 10px; color: #6b8db0; margin-top: 4px; }
+.cv-sky { color: var(--sky); }
+.cv-green { color: var(--green); text-shadow: 0 0 20px rgba(16,185,129,0.3); }
+.cv-yellow { color: var(--yellow); }
+.cv-red { color: var(--red); text-shadow: 0 0 20px rgba(244,63,94,0.3); }
+
+/* QUICK ACTIONS */
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+.quick-btn {
+  background: #ffffff;
+  border-radius: 14px; padding: 12px 8px;
+  border: 1px solid rgba(14,165,233,0.15); text-align: center; cursor: pointer;
+  transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  box-shadow: 0 2px 8px rgba(14,165,233,0.07);
+}
+.quick-btn:active { transform: scale(0.93); background: rgba(14,165,233,0.08); }
+.quick-btn .q-icon { font-size: 22px; }
+.quick-btn .q-label { font-size: 9px; color: #6b8db0; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* ALERT CARDS */
+.alert-card {
+  background: #fff5f7;
+  border-radius: 12px; padding: 12px 14px;
+  border: 1px solid rgba(225,29,72,0.2); margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.alert-name { font-size: 14px; font-weight: 600; color: #1e3a5f; }
+.alert-cat { font-size: 10px; color: #6b8db0; margin-top: 2px; }
+.alert-right { text-align: right; }
+.alert-qty { font-size: 18px; font-weight: 700; color: var(--red); font-family: 'Orbitron', monospace; }
+.alert-unit { font-size: 10px; color: #6b8db0; }
+
+/* FORM CARDS */
+.form-card {
+  background: #ffffff;
+  border-radius: 16px; padding: 18px;
+  border: 1px solid rgba(14,165,233,0.15);
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.08);
+}
+.form-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--sky); margin-bottom: 16px;
+  letter-spacing: 1px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.form-group { margin-bottom: 12px; }
+.form-label {
+  font-size: 10px; color: #6b8db0; font-weight: 700;
+  margin-bottom: 5px; display: block; letter-spacing: 1px; text-transform: uppercase;
+}
+.form-input, .form-select {
+  width: 100%; padding: 10px 14px;
+  background: #f4f7fb; border: 1px solid rgba(14,165,233,0.2);
+  border-radius: 10px; color: #1e3a5f; font-size: 14px;
+  font-family: 'Exo 2', sans-serif; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+  background: #ffffff;
+}
+.form-input::placeholder { color: #9ab8d0; }
+.form-select option { background: #ffffff; color: #1e3a5f; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* BUTTONS */
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  color: #020c1b; border: none; border-radius: 12px;
+  font-size: 13px; font-weight: 800;
+  cursor: pointer; font-family: 'Exo 2', sans-serif;
+  letter-spacing: 2px; text-transform: uppercase;
+  transition: all 0.2s; box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+}
+.btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(56,189,248,0.2); }
+
+.btn-success {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff; border: none; border-radius: 12px;
+  font-size: 13px; font-weight: 800;
+  cursor: pointer; font-family: 'Exo 2', sans-serif;
+  letter-spacing: 2px; text-transform: uppercase;
+  transition: all 0.2s; box-shadow: 0 4px 20px rgba(16,185,129,0.25);
+}
+.btn-success:active { transform: scale(0.97); }
+
+/* SEARCH */
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(14,165,233,0.2); border-radius: 12px;
+  padding: 10px 14px; margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(14,165,233,0.07);
+}
+.search-box input {
+  flex:1; background:none; border:none; color:#1e3a5f;
+  font-size:14px; font-family:'Exo 2',sans-serif; outline:none;
+}
+.search-box input::placeholder { color: #9ab8d0; }
+.search-icon { color: #6b8db0; font-size: 14px; }
+
+/* PRODUCT CARDS */
+.product-card {
+  background: #ffffff;
+  border-radius: 14px; padding: 14px;
+  border: 1px solid rgba(14,165,233,0.15); margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.2s; box-shadow: 0 2px 10px rgba(14,165,233,0.07);
+}
+.product-card:active { transform: scale(0.98); }
+.product-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; color: #1e3a5f; }
+.product-meta { font-size: 11px; color: #6b8db0; }
+.product-prices { margin-top: 5px; display: flex; gap: 10px; }
+.price-tag { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.price-buy { background: rgba(56,189,248,0.1); color: var(--sky); }
+.price-sell { background: rgba(16,185,129,0.1); color: var(--green); }
+.prod-right { text-align: right; }
+.prod-stock { font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 700; }
+.prod-unit { font-size: 10px; color: #6b8db0; margin-top: 2px; }
+.stock-badge {
+  font-size: 9px; padding: 3px 8px; border-radius: 20px;
+  font-weight: 700; margin-top: 4px; display: inline-block; letter-spacing: 0.5px;
+}
+.b-ok { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.b-low { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.b-out { background: rgba(244,63,94,0.15); color: var(--red); border: 1px solid rgba(244,63,94,0.3); }
+.c-ok { color: var(--green); }
+.c-low { color: var(--yellow); }
+.c-out { color: var(--red); }
+
+/* TRANSACTION CARDS */
+.txn-card {
+  background: #ffffff;
+  border-radius: 14px; padding: 13px 14px;
+  border: 1px solid rgba(14,165,233,0.15); margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(14,165,233,0.07);
+}
+.txn-left { display: flex; align-items: center; gap: 12px; }
+.txn-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.txn-icon.purchase { background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.2); }
+.txn-icon.sale { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.2); }
+.txn-name { font-size: 14px; font-weight: 600; color: #1e3a5f; }
+.txn-sub { font-size: 11px; color: #6b8db0; margin-top: 2px; }
+.txn-right { text-align: right; }
+.txn-amount { font-family: 'Orbitron', monospace; font-size: 15px; font-weight: 700; }
+.txn-amount.purchase { color: var(--red); }
+.txn-amount.sale { color: var(--green); }
+.txn-qty { font-size: 10px; color: #6b8db0; margin-top: 2px; }
+.txn-type-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 20px; font-weight: 700;
+  letter-spacing: 0.5px; display: inline-block; margin-top: 3px;
+}
+.tb-p { background: rgba(56,189,248,0.12); color: var(--sky); }
+.tb-s { background: rgba(16,185,129,0.12); color: var(--green); }
+
+/* REPORTS */
+.report-card {
+  background: #ffffff;
+  border-radius: 16px; padding: 18px;
+  border: 1px solid rgba(14,165,233,0.15); margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.08);
+}
+.report-big {
+  font-family: 'Orbitron', monospace;
+  font-size: 36px; font-weight: 900;
+  text-align: center; padding: 10px 0;
+}
+.report-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid rgba(14,165,233,0.08);
+}
+.report-row:last-child { border-bottom: none; }
+.report-key { font-size: 12px; color: #6b8db0; text-transform: uppercase; letter-spacing: 0.5px; }
+.report-val { font-size: 15px; font-weight: 700; font-family: 'Exo 2', sans-serif; color: #1e3a5f; }
+
+/* GREETING HEADER */
+.greeting-card {
+  background: linear-gradient(135deg, #0a1e40, #0d2a5e);
+  border-radius: 16px; padding: 18px;
+  border: 1px solid rgba(56,189,248,0.2); margin-bottom: 16px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 6px 24px rgba(10,30,64,0.2);
+}
+.greeting-card::after {
+  content: '📦';
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 48px; opacity: 0.1;
+}
+.greeting-card h2 { font-size: 18px; font-weight: 700; color: #e0f2fe; }
+.greeting-card h2 span { color: #38bdf8; }
+.greeting-card p { font-size: 12px; color: rgba(180,220,248,0.6); margin-top: 4px; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 430px;
+  background: rgba(255,255,255,0.97);
+  border-top: 1px solid rgba(14,165,233,0.15);
+  display: flex; padding: 6px 0 10px; z-index: 100;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 -4px 20px rgba(14,165,233,0.1);
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 4px; cursor: pointer;
+  color: #9ab8d0; background: none; border: none; transition: all 0.2s;
+}
+.nav-btn.active { color: var(--sky); }
+.nav-btn .n-icon { font-size: 18px; }
+.nav-btn .n-label { font-size: 9px; font-weight: 700; font-family: 'Exo 2', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+.nav-btn.active .n-label { color: var(--sky); }
+
+/* TOAST */
+.toast {
+  position: fixed; top: 75px; left: 50%; transform: translateX(-50%);
+  padding: 10px 22px; border-radius: 30px;
+  font-weight: 700; font-size: 13px; z-index: 9998;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateX(-50%) translateY(-10px);
+  font-family: 'Exo 2', sans-serif; letter-spacing: 0.5px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center; padding: 30px 20px; color: #9ab8d0;
+  font-size: 13px; letter-spacing: 0.5px;
+}
+.empty-state .e-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+
+/* PROFIT / LOSS badge */
+.pl-positive { color: var(--green); }
+.pl-negative { color: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splash">
+  <div class="splash-bg-ring ring1"></div>
+  <div class="splash-bg-ring ring2"></div>
+  <div class="splash-bg-ring ring3"></div>
+  <div class="splash-bg-ring ring4"></div>
+
+  <div class="splash-logo-wrap">
+    <div class="splash-icon">📦</div>
+    <div class="splash-title">
+      <span class="line1">Anjali Traders</span>
+      <span class="line2">Inventory Management System</span>
+    </div>
+  </div>
+
+  <div class="splash-bar-wrap">
+    <div class="splash-bar-track"><div class="splash-bar-fill"></div></div>
+    <div class="splash-tagline">Loading your business dashboard...</div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="brand">ANJALI TRADERS</div>
+      <div class="sub">Inventory Management</div>
+    </div>
+    <div class="topbar-right">
+      <div class="top-date" id="currentDate"></div>
+      <div class="notif-btn">🔔</div>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('dashboard')">⬡ Dashboard</button>
+    <button class="tab-btn" onclick="showTab('products')">◈ Products</button>
+    <button class="tab-btn" onclick="showTab('purchase')">⬇ Purchase</button>
+    <button class="tab-btn" onclick="showTab('sale')">⬆ Sale</button>
+    <button class="tab-btn" onclick="showTab('transactions')">≡ History</button>
+    <button class="tab-btn" onclick="showTab('reports')">◎ Reports</button>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="page active" id="page-dashboard">
+    <div class="greeting-card">
+      <h2>Good Day! <span id="greetEmoji">☀️</span></h2>
+      <p id="greetSub">Here's your inventory overview for today.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" data-icon="📦">
+        <div class="glint"></div>
+        <div class="stat-label">Total Products</div>
+        <div class="stat-value cv-sky" id="totalProducts">0</div>
+        <div class="stat-sub">Items in inventory</div>
+      </div>
+      <div class="stat-card" data-icon="💰">
+        <div class="glint"></div>
+        <div class="stat-label">Today's Sales</div>
+        <div class="stat-value cv-green" id="todaySales">₹0</div>
+        <div class="stat-sub">Revenue today</div>
+      </div>
+      <div class="stat-card" data-icon="🛒">
+        <div class="glint"></div>
+        <div class="stat-label">Today's Purchase</div>
+        <div class="stat-value cv-yellow" id="todayPurchase">₹0</div>
+        <div class="stat-sub">Spent today</div>
+      </div>
+      <div class="stat-card" data-icon="⚠️" id="lowStockCard" style="cursor:pointer;" title="Click to view details">
+        <div class="glint"></div>
+        <div class="stat-label">Low Stock</div>
+        <div class="stat-value cv-red" id="lowStockCount">0</div>
+        <div class="stat-sub" style="color:var(--sky);font-weight:700;">👆 Tap for details</div>
+      </div>
+    </div>
+
+    <div class="quick-grid">
+      <div class="quick-btn" onclick="showTab('purchase')">
+        <div class="q-icon">🛒</div><div class="q-label">Purchase</div>
+      </div>
+      <div class="quick-btn" onclick="showTab('sale')">
+        <div class="q-icon">💰</div><div class="q-label">Sale</div>
+      </div>
+      <div class="quick-btn" onclick="showTab('products')">
+        <div class="q-icon">📦</div><div class="q-label">Products</div>
+      </div>
+      <div class="quick-btn" onclick="showTab('reports')">
+        <div class="q-icon">📊</div><div class="q-label">Reports</div>
+      </div>
+    </div>
+
+    <div class="section-title">⚠ Low Stock Alerts</div>
+    <div id="alertsList"></div>
+
+    <!-- QUICK STOCK CHECK -->
+    <div class="section-title" style="margin-top:16px;">🔍 Quick Stock Check</div>
+    <div style="position:relative;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:10px;background:#ffffff;border:2px solid rgba(14,165,233,0.3);border-radius:14px;padding:12px 16px;box-shadow:0 2px 12px rgba(14,165,233,0.1);">
+        <span style="font-size:18px;">🔍</span>
+        <input id="quickSearchInput" placeholder="Product naam type karo..." 
+          style="flex:1;background:none;border:none;color:#1e3a5f;font-size:15px;font-family:'Exo 2',sans-serif;outline:none;"
+          oninput="quickStockSearch()"
+          autocomplete="off">
+        <span id="quickSearchClear" onclick="clearQuickSearch()" style="display:none;color:#6b8db0;cursor:pointer;font-size:18px;padding:2px 6px;">✕</span>
+      </div>
+      <!-- Results Dropdown -->
+      <div id="quickSearchResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 14px 14px;border:2px solid rgba(14,165,233,0.2);border-top:none;z-index:500;max-height:300px;overflow-y:auto;box-shadow:0 8px 24px rgba(14,165,233,0.15);"></div>
+    </div>
+  </div>
+
+  <!-- ===== STOCK DETAIL MODAL ===== -->
+  <div id="stockDetailModal" style="display:none;position:fixed;inset:0;z-index:9991;background:rgba(10,30,64,0.6);backdrop-filter:blur(6px);">
+    <div id="stockDetailInner" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-radius:24px 24px 0 0;overflow:hidden;box-shadow:0 -8px 40px rgba(14,165,233,0.2);animation:slideUp 0.3s ease;">
+      <div style="background:linear-gradient(135deg,#0a1e40,#0d2a5e);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:10px;color:rgba(180,220,248,0.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Stock Detail</div>
+          <div id="sdProductName" style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#38bdf8;max-width:260px;line-height:1.3;"></div>
+        </div>
+        <button onclick="closeStockDetail()" style="width:32px;height:32px;border-radius:50%;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-size:16px;cursor:pointer;flex-shrink:0;">✕</button>
+      </div>
+      <div style="padding:20px;text-align:center;border-bottom:1px solid rgba(14,165,233,0.1);">
+        <div style="font-size:11px;color:#6b8db0;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Current Stock</div>
+        <div id="sdStockNum" style="font-family:'Orbitron',monospace;font-size:64px;font-weight:900;line-height:1;"></div>
+        <div id="sdUnit" style="font-size:14px;color:#6b8db0;margin-top:4px;font-weight:600;"></div>
+        <div id="sdStatusBadge" style="display:inline-block;margin-top:10px;padding:5px 18px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(14,165,233,0.1);">
+        <div style="background:#fff;padding:14px;text-align:center;">
+          <div style="font-size:10px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Category</div>
+          <div id="sdCat" style="font-size:14px;font-weight:700;color:#1e3a5f;"></div>
+        </div>
+        <div style="background:#fff;padding:14px;text-align:center;">
+          <div style="font-size:10px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Min. Required</div>
+          <div id="sdMinStock" style="font-size:14px;font-weight:700;color:#1e3a5f;"></div>
+        </div>
+        <div style="background:#fff;padding:14px;text-align:center;">
+          <div style="font-size:10px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Buy Price</div>
+          <div id="sdBuyPrice" style="font-size:14px;font-weight:700;color:#0ea5e9;"></div>
+        </div>
+        <div style="background:#fff;padding:14px;text-align:center;">
+          <div style="font-size:10px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">Sale Price</div>
+          <div id="sdSellPrice" style="font-size:14px;font-weight:700;color:#059669;"></div>
+        </div>
+      </div>
+      <div style="padding:14px 20px;background:#f4f7fb;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:12px;color:#6b8db0;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Stock Value</div>
+        <div id="sdStockValue" style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#0ea5e9;"></div>
+      </div>
+      <div style="padding:14px 16px 28px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button id="sdPurchaseBtn" style="padding:13px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#020c1b;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Exo 2',sans-serif;letter-spacing:1px;">🛒 PURCHASE</button>
+        <button id="sdSaleBtn" style="padding:13px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Exo 2',sans-serif;letter-spacing:1px;">💰 SELL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCTS ===== -->
+  <div class="page" id="page-products">
+    <div class="form-card">
+      <div class="form-title">➕ Add New Product</div>
+      <div class="form-group">
+        <label class="form-label">Product Name</label>
+        <input class="form-input" id="prodName" placeholder="e.g. Cement, Rice, Mobile...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="prodCat">
+            <option>General</option>
+            <option>Electronics</option>
+            <option>Grocery</option>
+            <option>Hardware</option>
+            <option>Clothing</option>
+            <option>Medicine</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select class="form-select" id="prodUnit">
+            <option>Pcs</option>
+            <option>Kg</option>
+            <option>Litre</option>
+            <option>Meter</option>
+            <option>Box</option>
+            <option>Bag</option>
+            <option>Dozen</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Purchase Price (₹)</label>
+          <input class="form-input" id="prodBuyPrice" type="number" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sale Price (₹)</label>
+          <input class="form-input" id="prodSellPrice" type="number" placeholder="0.00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Opening Stock</label>
+          <input class="form-input" id="prodStock" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Min Stock (Alert)</label>
+          <input class="form-input" id="prodMinStock" type="number" placeholder="5">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="addProduct()">✓ Save Product</button>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+      <div class="section-title" style="margin-bottom:0;flex:1">◈ All Products</div>
+      <label style="background:linear-gradient(135deg,#0a1e40,#0d2a5e);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;" title="Import Excel file">
+        📊 Import Excel
+        <input type="file" accept=".xlsx,.xls,.xlsm,.csv" style="display:none" onchange="importExcel(this)">
+      </label>
+      <button onclick="resetToExcel()" style="background:rgba(244,63,94,0.1);color:#e11d48;border:1px solid rgba(244,63,94,0.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;">🔄 Reset</button>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input placeholder="Search products..." id="searchInput" oninput="renderProducts()">
+    </div>
+    <div id="productList"></div>
+  </div>
+
+  <!-- ===== PURCHASE ===== -->
+  <div class="page" id="page-purchase">
+    <div class="form-card">
+      <div class="form-title">🛒 New Purchase Entry</div>
+      <div class="form-group">
+        <label class="form-label">Vendor / Supplier Name</label>
+        <input class="form-input" id="purVendor" list="vendorList" placeholder="Type or select vendor..." autocomplete="off">
+        <datalist id="vendorList"></datalist>
+        <div style="font-size:10px;color:var(--sky);margin-top:4px;letter-spacing:0.5px;">✅ New vendor will be auto-saved</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Select Product</label>
+        <select class="form-select" id="purProduct"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quantity</label>
+          <input class="form-input" id="purQty" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rate per Unit (₹)</label>
+          <input class="form-input" id="purRate" type="number" placeholder="0.00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" id="purDate" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Remarks (Optional)</label>
+        <input class="form-input" id="purNote" placeholder="Any notes...">
+      </div>
+      <div id="purTotal" style="text-align:right;color:var(--sky);font-size:13px;margin-bottom:12px;font-weight:600;letter-spacing:0.5px;"></div>
+      <button class="btn-primary" onclick="addPurchase()">✓ Save Purchase</button>
+    </div>
+  </div>
+
+  <!-- ===== SALE ===== -->
+  <div class="page" id="page-sale">
+    <div class="form-card">
+      <div class="form-title">💰 New Sale Entry</div>
+
+      <!-- Customer Name -->
+      <div class="form-group">
+        <label class="form-label">Customer Name</label>
+        <input class="form-input" id="saleCust" list="customerList" placeholder="Type or select customer..." autocomplete="off">
+        <datalist id="customerList"></datalist>
+        <div style="font-size:10px;color:var(--green);margin-top:4px;letter-spacing:0.5px;">✅ New customer will be auto-saved</div>
+      </div>
+
+      <!-- Date -->
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" id="saleDate" type="date">
+      </div>
+
+      <!-- Products Section Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--sky);letter-spacing:1px;text-transform:uppercase;">◈ Products</div>
+        <button onclick="addSaleRow()" style="
+          background:linear-gradient(135deg,#059669,#10b981);
+          color:#fff;border:none;border-radius:20px;
+          padding:6px 14px;font-size:11px;font-weight:700;
+          cursor:pointer;font-family:'Exo 2',sans-serif;
+          letter-spacing:0.5px;display:flex;align-items:center;gap:5px;
+          box-shadow:0 2px 8px rgba(5,150,105,0.3);
+        ">➕ Add Product</button>
+      </div>
+
+      <!-- Dynamic Product Rows -->
+      <div id="saleRowsContainer"></div>
+
+      <!-- Grand Total -->
+      <div id="saleGrandTotal" style="
+        text-align:right;padding:10px 14px;
+        background:linear-gradient(135deg,rgba(5,150,105,0.08),rgba(5,150,105,0.04));
+        border-radius:10px;border:1px solid rgba(5,150,105,0.15);
+        margin-bottom:14px;display:none;
+      ">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Grand Total</div>
+        <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--green);" id="saleGrandTotalAmt">₹0</div>
+      </div>
+
+      <!-- Remarks -->
+      <div class="form-group">
+        <label class="form-label">Remarks (Optional)</label>
+        <input class="form-input" id="saleNote" placeholder="Any notes...">
+      </div>
+
+      <button class="btn-success" onclick="addSale()">✓ Save Sale</button>
+    </div>
+  </div>
+
+  <!-- ===== TRANSACTIONS ===== -->
+  <div class="page" id="page-transactions">
+    <div class="section-title">≡ Transaction History</div>
+    <div id="txnList"></div>
+  </div>
+
+  <!-- ===== REPORTS ===== -->
+  <div class="page" id="page-reports">
+    <div class="section-title">◎ Business Reports</div>
+
+    <div class="report-card">
+      <div class="section-title" style="margin-bottom:8px">💰 Sales Summary</div>
+      <div class="report-big pl-positive" id="totalSalesAmt">₹0</div>
+      <div class="report-row">
+        <span class="report-key">Total Transactions</span>
+        <span class="report-val cv-sky" id="totalSalesTxn">0</span>
+      </div>
+      <div class="report-row">
+        <span class="report-key">Total Qty Sold</span>
+        <span class="report-val" id="totalSalesQty">0</span>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="section-title" style="margin-bottom:8px">🛒 Purchase Summary</div>
+      <div class="report-big cv-sky" id="totalPurchaseAmt">₹0</div>
+      <div class="report-row">
+        <span class="report-key">Total Transactions</span>
+        <span class="report-val cv-sky" id="totalPurchaseTxn">0</span>
+      </div>
+      <div class="report-row">
+        <span class="report-key">Total Qty Purchased</span>
+        <span class="report-val" id="totalPurchaseQty">0</span>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="section-title" style="margin-bottom:8px">📊 Profit / Loss</div>
+      <div class="report-big" id="profitLoss">₹0</div>
+      <div class="report-row">
+        <span class="report-key">Total Products</span>
+        <span class="report-val" id="rTotalProds">0</span>
+      </div>
+      <div class="report-row">
+        <span class="report-key">Low Stock Items</span>
+        <span class="report-val cv-red" id="rLowStock">0</span>
+      </div>
+      <div class="report-row">
+        <span class="report-key">Out of Stock</span>
+        <span class="report-val cv-red" id="rOutStock">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')">
+      <span class="n-icon">🏠</span><span class="n-label">Home</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('products')">
+      <span class="n-icon">📦</span><span class="n-label">Products</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('purchase')">
+      <span class="n-icon">🛒</span><span class="n-label">Buy</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('sale')">
+      <span class="n-icon">💰</span><span class="n-label">Sell</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('reports')">
+      <span class="n-icon">📊</span><span class="n-label">Reports</span>
+    </button>
+  </div>
+
+</div><!-- end #app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== SPLASH =====
+window.addEventListener('load', () => {
+  const splash = document.getElementById('splash');
+  const app = document.getElementById('app');
+  setTimeout(() => {
+    splash.classList.add('exit');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      app.classList.add('visible');
+    }, 700);
+  }, 3600);
+});
+
+// ===== EXCEL PRE-LOADED DATA =====
+const EXCEL_PRODUCTS = [{"id": 1700000000000, "name": "STREET LIGHT 36WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 900, "sellPrice": 1035, "stock": 24, "minStock": 5}, {"id": 1700000000001, "name": "HALOGEN ROD (VIVID)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 24, "minStock": 5}, {"id": 1700000000002, "name": "HALOGEN ROD (HALONIX) 500WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 30, "minStock": 5}, {"id": 1700000000003, "name": "PANEL LIGHT 20W (WIPRO)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 29, "minStock": 5}, {"id": 1700000000004, "name": "LUGS COPPER 2.5 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 3, "sellPrice": 3, "stock": 1200, "minStock": 5}, {"id": 1700000000005, "name": "LUGS COPPER 16 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 12, "sellPrice": 14, "stock": 258, "minStock": 5}, {"id": 1700000000006, "name": "LUGS COPPER 25 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 33, "sellPrice": 38, "stock": 161, "minStock": 5}, {"id": 1700000000007, "name": "LUGS COPPER 25 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 103, "minStock": 5}, {"id": 1700000000008, "name": "LUGS COPPER 35 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 38, "sellPrice": 44, "stock": 206, "minStock": 5}, {"id": 1700000000009, "name": "LUGS COPPER 35 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 161, "minStock": 5}, {"id": 1700000000010, "name": "LUGS COPPER 50 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 65, "sellPrice": 75, "stock": 92, "minStock": 5}, {"id": 1700000000011, "name": "LUGS COPPER 70 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 82, "sellPrice": 94, "stock": 111, "minStock": 5}, {"id": 1700000000012, "name": "LUGS COPPER 95 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 100, "sellPrice": 115, "stock": 252, "minStock": 5}, {"id": 1700000000013, "name": "LUGS COPPER 95 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 76, "minStock": 5}, {"id": 1700000000014, "name": "LUGS COPPER 120 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 210, "sellPrice": 241, "stock": 123, "minStock": 5}, {"id": 1700000000015, "name": "LUGS COPPER 120 SQMM (RING)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 190, "minStock": 5}, {"id": 1700000000016, "name": "LUGS COPPER 150 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 95, "minStock": 5}, {"id": 1700000000017, "name": "LUGS COPPER 185 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 103, "minStock": 5}, {"id": 1700000000018, "name": "LUGS COPPER 225 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000019, "name": "LUGS COPPER 240 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 29, "minStock": 5}, {"id": 1700000000020, "name": "LUGS COPPER 300 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 560, "sellPrice": 644, "stock": 51, "minStock": 5}, {"id": 1700000000021, "name": "LUGS COPPER 400 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 200, "sellPrice": 230, "stock": 21, "minStock": 5}, {"id": 1700000000022, "name": "LUGS ALU. 06 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 20, "minStock": 5}, {"id": 1700000000023, "name": "LUGS ALU. 10 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 70, "minStock": 5}, {"id": 1700000000024, "name": "LUGS ALU. 16 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 110, "minStock": 5}, {"id": 1700000000025, "name": "LUGS ALU. 16 SQMM (बड़ा होल)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 97, "minStock": 5}, {"id": 1700000000026, "name": "LUGS ALU. 25 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 7, "sellPrice": 8, "stock": 302, "minStock": 5}, {"id": 1700000000027, "name": "LUGS ALU. 35 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 10, "sellPrice": 12, "stock": 231, "minStock": 5}, {"id": 1700000000028, "name": "LUGS ALU. 50 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 46, "minStock": 5}, {"id": 1700000000029, "name": "LUGS ALU. 70 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 27, "sellPrice": 31, "stock": 151, "minStock": 5}, {"id": 1700000000030, "name": "LUGS ALU. 95 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 57, "minStock": 5}, {"id": 1700000000031, "name": "LUGS ALU. 120 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 38, "sellPrice": 44, "stock": 90, "minStock": 5}, {"id": 1700000000032, "name": "LUGS ALU. 150 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 25, "minStock": 5}, {"id": 1700000000033, "name": "LUGS ALU. 185 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 219, "minStock": 5}, {"id": 1700000000034, "name": "LUGS ALU. 225 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000035, "name": "LUGS ALU. 240 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 35, "minStock": 5}, {"id": 1700000000036, "name": "LUGS ALU. 300 SQMM", "category": "Electrical", "unit": "NOS", "buyPrice": 130, "sellPrice": 150, "stock": 60, "minStock": 5}, {"id": 1700000000037, "name": "DC GLAND 16 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 170, "sellPrice": 195, "stock": 11, "minStock": 5}, {"id": 1700000000038, "name": "DC GLAND 19 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 210, "sellPrice": 241, "stock": 36, "minStock": 5}, {"id": 1700000000039, "name": "DC GLAND 22 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 241.4, "sellPrice": 278, "stock": 40, "minStock": 5}, {"id": 1700000000040, "name": "DC GLAND 25 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 317, "sellPrice": 365, "stock": 70, "minStock": 5}, {"id": 1700000000041, "name": "DC GLAND 28 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 394, "sellPrice": 453, "stock": 58, "minStock": 5}, {"id": 1700000000042, "name": "DC GLAND 32 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 500, "sellPrice": 575, "stock": 14, "minStock": 5}, {"id": 1700000000043, "name": "DC GLAND 35 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000044, "name": "DC GLAND 38 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 600, "sellPrice": 690, "stock": 36, "minStock": 5}, {"id": 1700000000045, "name": "DC GLAND 45 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 900, "sellPrice": 1035, "stock": 26, "minStock": 5}, {"id": 1700000000046, "name": "DC GLAND 50 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 18, "minStock": 5}, {"id": 1700000000047, "name": "DC GLAND 57 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 1200, "sellPrice": 1380, "stock": 17, "minStock": 5}, {"id": 1700000000048, "name": "DC GLAND 63 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 1600, "sellPrice": 1840, "stock": 11, "minStock": 5}, {"id": 1700000000049, "name": "DC GLAND 70 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 1700, "sellPrice": 1955, "stock": 15, "minStock": 5}, {"id": 1700000000050, "name": "DC GLAND 75 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000051, "name": "DC GLAND 82 MM", "category": "Electrical", "unit": "NOS", "buyPrice": 2400, "sellPrice": 2760, "stock": 9, "minStock": 5}, {"id": 1700000000052, "name": "MCB 06A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 10, "minStock": 5}, {"id": 1700000000053, "name": "MCB 10A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 8, "minStock": 5}, {"id": 1700000000054, "name": "MCB 16A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 10, "minStock": 5}, {"id": 1700000000055, "name": "MCB 20A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 10, "minStock": 5}, {"id": 1700000000056, "name": "MCB 25A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 12, "minStock": 5}, {"id": 1700000000057, "name": "MCB 32A 1P BENTEX", "category": "Electrical", "unit": "NOS", "buyPrice": 113, "sellPrice": 130, "stock": 12, "minStock": 5}, {"id": 1700000000058, "name": "MCB 06A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 2, "minStock": 5}, {"id": 1700000000059, "name": "MCB 16A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 10, "minStock": 5}, {"id": 1700000000060, "name": "MCB 20A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 12, "minStock": 5}, {"id": 1700000000061, "name": "MCB 25A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 11, "minStock": 5}, {"id": 1700000000062, "name": "MCB 32A 1P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 110, "sellPrice": 126, "stock": 10, "minStock": 5}, {"id": 1700000000063, "name": "MCB 63A 2P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 630, "sellPrice": 724, "stock": 6, "minStock": 5}, {"id": 1700000000064, "name": "MCB 63A 3P REO", "category": "Electrical", "unit": "NOS", "buyPrice": 1181.36, "sellPrice": 1359, "stock": 3, "minStock": 5}, {"id": 1700000000065, "name": "MCB 63A 4P L&T", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000066, "name": "MCB 06A 2P L&T", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000067, "name": "MCB 25A 3P LEGRAND", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000068, "name": "MCB 06A 1P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 15, "minStock": 5}, {"id": 1700000000069, "name": "MCB 16A 2P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 13, "minStock": 5}, {"id": 1700000000070, "name": "MCB 32A 4P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 6, "minStock": 5}, {"id": 1700000000071, "name": "MCB 40A 3P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000072, "name": "MCB 63A 4P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 5, "minStock": 5}, {"id": 1700000000073, "name": "RCCB 25A 2P HAGER", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 43, "minStock": 5}, {"id": 1700000000074, "name": "SLEEVE 55MM (BLACK) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000075, "name": "SLEEVE 30MM (BLACK) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 4, "minStock": 5}, {"id": 1700000000076, "name": "SLEEVE 73MM (RED) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000077, "name": "SLEEVE 73MM (YELLOW) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000078, "name": "SLEEVE 81MM (GREEN) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000079, "name": "SLEEVE 27MM (BLUE) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000080, "name": "SLEEVE 73MM (BLUE) 50MTR.", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000081, "name": "KITKAT FUSE 300AMP 415V", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 12, "minStock": 5}, {"id": 1700000000082, "name": "ELR (EARTH LEAKAGE RELAY)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 25, "minStock": 5}, {"id": 1700000000083, "name": "COMPOUND RUBBER (PUNCTURE TAPE)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 14, "minStock": 5}, {"id": 1700000000084, "name": "FAN 400RPM POLAR", "category": "Electrical", "unit": "NOS", "buyPrice": 1700, "sellPrice": 1955, "stock": 8, "minStock": 5}, {"id": 1700000000085, "name": "PUSH BUTTON (RED COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 34, "minStock": 5}, {"id": 1700000000086, "name": "PUSH BUTTON (GREEN COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 35, "minStock": 5}, {"id": 1700000000087, "name": "PUSH BUTTON (GEN NEXT) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000088, "name": "PUSH BUTTON ELEMENT (CONTACT BLOCK) (RED COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 33, "minStock": 5}, {"id": 1700000000089, "name": "PUSH BUTTON ELEMENT (CONTACT BLOCK) (GREEN COLOR) MAKE- ESBEE", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 29, "minStock": 5}, {"id": 1700000000090, "name": "MK1 COIL 440V", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 4, "minStock": 5}, {"id": 1700000000091, "name": "HONEYWELL HARD HAT MOUNT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000092, "name": "ANALOG TIME SWITCH", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 1, "minStock": 5}, {"id": 1700000000093, "name": "ROTARY SWITCH", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 4, "minStock": 5}, {"id": 1700000000094, "name": "THERMAL OLR MN2", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 3, "minStock": 5}, {"id": 1700000000095, "name": "LED STRIP LIGHT ADAPTOR", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000096, "name": "CONTROL BOX BX3", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 0, "minStock": 5}, {"id": 1700000000097, "name": "BULB 09WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 12, "minStock": 5}, {"id": 1700000000098, "name": "BULB 20WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000099, "name": "BULB 30WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 14, "minStock": 5}, {"id": 1700000000100, "name": "BULB 40WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 5, "minStock": 5}, {"id": 1700000000101, "name": "BULB 50WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 7, "minStock": 5}, {"id": 1700000000102, "name": "BULB 15W", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 19, "minStock": 5}, {"id": 1700000000103, "name": "BULB EMERGENCY", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 5, "minStock": 5}, {"id": 1700000000104, "name": "SURFACE LIGHT 10WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000105, "name": "SURFACE LIGHT 15WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 10, "minStock": 5}, {"id": 1700000000106, "name": "ITC MAKE- 22MM/220V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 40, "minStock": 5}, {"id": 1700000000107, "name": "ITC MAKE- 22MM/220V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 40, "minStock": 5}, {"id": 1700000000108, "name": "ITC MAKE- 22MM/220V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 40, "minStock": 5}, {"id": 1700000000109, "name": "ITC MAKE- 22MM/220V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 40, "minStock": 5}, {"id": 1700000000110, "name": "ITC MAKE- 22MM/220V (WHITE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 10, "minStock": 5}, {"id": 1700000000111, "name": "ITC MAKE- 22MM ACDC 24V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000112, "name": "ITC MAKE- 22MM ACDC 24V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000113, "name": "ITC MAKE- 22MM ACDC 24V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000114, "name": "ITC MAKE- 22MM ACDC 24V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000115, "name": "ITC MAKE- 22MM 220V (LIGHT YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000116, "name": "ITC MAKE- 22MM AC415V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000117, "name": "ITC MAKE- 22MM AC415V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000118, "name": "ITC MAKE- 22MM AC415V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000119, "name": "ITC MAKE- 22MM AC415V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000120, "name": "ITC MAKE- 22MM AC415V (LIGHT YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000121, "name": "ITC MAKE- 22MM ACDC12-220V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000122, "name": "ITC MAKE- 22MM ACDC12-220V (AMBER)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000123, "name": "ITC MAKE- 22MM ACDC12-220V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000124, "name": "ITC MAKE- 22MM ACDC12-220V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000125, "name": "ITC MAKE- 22MM ACDC12-220V (LIGHT YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 80, "sellPrice": 92, "stock": 0, "minStock": 5}, {"id": 1700000000126, "name": "ITC MAKE- 22MM ACDC12-220V (WHITE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000127, "name": "ITC MAKE- 22MM ACDC24V (WHITE)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000128, "name": "ID-IDEL MAKE- 22MM ACDC 12-250V (RED, YELLOW, GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000129, "name": "ID-IDEL MAKE- 22MM ACDC 24V (RED, YELLOW, GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000130, "name": "ID-IDEL MAKE- 22MM AC 240V (RED, YELLOW, GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 85, "sellPrice": 98, "stock": 0, "minStock": 5}, {"id": 1700000000131, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (YELLOW)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000132, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (ORANGE)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000133, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (BLUE)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000134, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (RED)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000135, "name": "ESBBEE PRO MAKE- 22.5MM AC 240V (GREEN)", "category": "Electrical", "unit": "NOS", "buyPrice": 127, "sellPrice": 146, "stock": 0, "minStock": 5}, {"id": 1700000000136, "name": "TOOLS- PLIER 1621-8", "category": "Electrical", "unit": "NOS", "buyPrice": 239, "sellPrice": 275, "stock": 0, "minStock": 5}, {"id": 1700000000137, "name": "TOOLS- TESTER 813", "category": "Electrical", "unit": "NOS", "buyPrice": 50, "sellPrice": 57, "stock": 0, "minStock": 5}, {"id": 1700000000138, "name": "TOOLS- HEXA BLADE", "category": "Electrical", "unit": "NOS", "buyPrice": 10, "sellPrice": 12, "stock": 0, "minStock": 5}, {"id": 1700000000139, "name": "TOOLS- HEXA FRAME", "category": "Electrical", "unit": "NOS", "buyPrice": 323.64, "sellPrice": 372, "stock": 0, "minStock": 5}, {"id": 1700000000140, "name": "TOOLS- GRINDING WHEEL (BOSCH)", "category": "Electrical", "unit": "NOS", "buyPrice": 55, "sellPrice": 63, "stock": 0, "minStock": 5}, {"id": 1700000000141, "name": "CRC BOTTLE", "category": "Electrical", "unit": "NOS", "buyPrice": 450, "sellPrice": 518, "stock": 5, "minStock": 5}, {"id": 1700000000142, "name": "NAIL GUN", "category": "Electrical", "unit": "NOS", "buyPrice": 500, "sellPrice": 575, "stock": 3, "minStock": 5}, {"id": 1700000000143, "name": "NAIL REPIT", "category": "Electrical", "unit": "BOX", "buyPrice": 500, "sellPrice": 575, "stock": 16, "minStock": 5}, {"id": 1700000000144, "name": "PAD LOCK RED", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 16, "minStock": 5}, {"id": 1700000000145, "name": "PAD LOCK YELLOW", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 6, "minStock": 5}, {"id": 1700000000146, "name": "PAD LOCK GREEN", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 6, "minStock": 5}, {"id": 1700000000147, "name": "TUBE LIGHT 20WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 140, "sellPrice": 161, "stock": 106, "minStock": 5}, {"id": 1700000000148, "name": "\"0\" WATT", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 72, "minStock": 5}, {"id": 1700000000149, "name": "GONG BELL 6\" 220V (NATIONAL)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000150, "name": "GONG BELL 24V DC ONLY (EDISON)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 2, "minStock": 5}, {"id": 1700000000151, "name": "COOLER PUMP HEAVY DUTY 2.80MTR. (APPROX 9FEET)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 36, "minStock": 5}, {"id": 1700000000152, "name": "COOLER PUMP HEAVY DUTY 1.85MTR. (APPROX 6FEET)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 30, "minStock": 5}, {"id": 1700000000153, "name": "COOLER PUMP MAKE- ELECS 1.85MTR. (APPROX 6FEET)", "category": "Electrical", "unit": "NOS", "buyPrice": 0, "sellPrice": 0, "stock": 30, "minStock": 5}];
+
+// ===== DATA =====
+let products = JSON.parse(localStorage.getItem('at_products') || 'null');
+if (!products || products.length === 0) {
+  products = EXCEL_PRODUCTS;
+  localStorage.setItem('at_products', JSON.stringify(products));
+}
+let transactions = JSON.parse(localStorage.getItem('at_transactions') || '[]');
+let vendors = JSON.parse(localStorage.getItem('at_vendors') || '[]');
+let customers = JSON.parse(localStorage.getItem('at_customers') || '[]');
+
+function save() {
+  localStorage.setItem('at_products', JSON.stringify(products));
+  localStorage.setItem('at_transactions', JSON.stringify(transactions));
+  localStorage.setItem('at_vendors', JSON.stringify(vendors));
+  localStorage.setItem('at_customers', JSON.stringify(customers));
+}
+
+// Auto-save vendor name
+function saveVendorName(name) {
+  name = name.trim();
+  if (name && !vendors.includes(name)) {
+    vendors.push(name);
+    localStorage.setItem('at_vendors', JSON.stringify(vendors));
+    updateVendorDatalist();
+  }
+}
+
+// Auto-save customer name
+function saveCustomerName(name) {
+  name = name.trim();
+  if (name && !customers.includes(name)) {
+    customers.push(name);
+    localStorage.setItem('at_customers', JSON.stringify(customers));
+    updateCustomerDatalist();
+  }
+}
+
+function updateVendorDatalist() {
+  const dl = document.getElementById('vendorList');
+  if (dl) dl.innerHTML = vendors.map(v => `<option value="${v}">`).join('');
+}
+
+function updateCustomerDatalist() {
+  const dl = document.getElementById('customerList');
+  if (dl) dl.innerHTML = customers.map(c => `<option value="${c}">`).join('');
+}
+
+// ===== DATE =====
+const now = new Date();
+document.getElementById('currentDate').textContent = now.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+document.querySelectorAll('input[type=date]').forEach(i => i.value = now.toISOString().split('T')[0]);
+const h = now.getHours();
+const greetEmoji = h < 12 ? '☀️' : h < 17 ? '🌤️' : '🌙';
+const greetText = h < 12 ? 'Good morning! Here\'s your inventory overview.' : h < 17 ? 'Good afternoon! Here\'s your inventory overview.' : 'Good evening! Here\'s your inventory overview.';
+document.getElementById('greetEmoji').textContent = greetEmoji;
+document.getElementById('greetSub').textContent = greetText;
+
+// ===== TOAST =====
+function showToast(msg, color='#10b981') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.background = color; t.style.color = color === '#10b981' ? '#022c22' : '#fff';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== NAVIGATION =====
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    const map = { dashboard:'Dashboard', products:'Products', purchase:'Purchase', sale:'Sale', transactions:'History', reports:'Reports' };
+    if (b.textContent.includes(map[name]?.substring(0,4) || '???')) b.classList.add('active');
+  });
+  const navMap = { dashboard:0, products:1, purchase:2, sale:3, reports:4 };
+  const navBtns = document.querySelectorAll('.nav-btn');
+  if (navMap[name] !== undefined) navBtns[navMap[name]].classList.add('active');
+  if (name==='dashboard') renderDashboard();
+  if (name==='products') renderProducts();
+  if (name==='purchase'||name==='sale') fillProductDropdowns();
+  if (name==='transactions') renderTransactions();
+  if (name==='reports') renderReports();
+}
+function showPage(name) { showTab(name); }
+
+// ===== ADD PRODUCT =====
+function addProduct() {
+  const name = document.getElementById('prodName').value.trim();
+  if (!name) { showToast('❌ Please enter product name!', '#f43f5e'); return; }
+  products.push({
+    id: Date.now(), name,
+    category: document.getElementById('prodCat').value,
+    unit: document.getElementById('prodUnit').value,
+    buyPrice: parseFloat(document.getElementById('prodBuyPrice').value)||0,
+    sellPrice: parseFloat(document.getElementById('prodSellPrice').value)||0,
+    stock: parseFloat(document.getElementById('prodStock').value)||0,
+    minStock: parseFloat(document.getElementById('prodMinStock').value)||5,
+  });
+  save();
+  ['prodName','prodBuyPrice','prodSellPrice','prodStock','prodMinStock'].forEach(id => document.getElementById(id).value='');
+  showToast('✅ Product added successfully!');
+  renderProducts();
+}
+
+// ===== RENDER PRODUCTS =====
+function renderProducts() {
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  const list = document.getElementById('productList');
+  const filtered = products.filter(p => p.name.toLowerCase().includes(q));
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div>No products found</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(p => {
+    const sc = p.stock<=0?'c-out':p.stock<=p.minStock?'c-low':'c-ok';
+    const bc = p.stock<=0?'b-out':p.stock<=p.minStock?'b-low':'b-ok';
+    const bl = p.stock<=0?'OUT OF STOCK':p.stock<=p.minStock?'LOW STOCK':'IN STOCK';
+    return `<div class="product-card">
+      <div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-meta">${p.category} &bull; ${p.unit}</div>
+        <div class="product-prices">
+          <span class="price-tag price-buy">Buy ₹${p.buyPrice}</span>
+          <span class="price-tag price-sell">Sell ₹${p.sellPrice}</span>
+        </div>
+      </div>
+      <div class="prod-right">
+        <div class="prod-stock ${sc}">${p.stock}</div>
+        <div class="prod-unit">${p.unit}</div>
+        <div class="stock-badge ${bc}">${bl}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== FILL DROPDOWNS =====
+function fillProductDropdowns() {
+  updateVendorDatalist();
+  updateCustomerDatalist();
+  // Only fill purchase dropdown (sale now uses dynamic rows)
+  const sel = document.getElementById('purProduct');
+  if (sel) {
+    sel.innerHTML = products.length
+      ? products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
+      : '<option>Please add products first</option>';
+  }
+  // Init sale rows if empty
+  if (document.getElementById('saleRowsContainer') && document.getElementById('saleRowsContainer').children.length === 0) {
+    addSaleRow();
+  }
+}
+
+// ===== MULTI-PRODUCT SALE ROWS =====
+let saleRowCount = 0;
+
+function addSaleRow() {
+  saleRowCount++;
+  const rowId = 'srow_' + saleRowCount;
+  const container = document.getElementById('saleRowsContainer');
+
+  const opts = products.map(p =>
+    `<option value="${p.id}" data-stock="${p.stock}" data-unit="${p.unit}" data-price="${p.sellPrice}">${p.name}</option>`
+  ).join('');
+
+  const div = document.createElement('div');
+  div.id = rowId;
+  div.style.cssText = `
+    background:#f4f7fb;border-radius:12px;padding:12px;
+    margin-bottom:10px;border:1px solid rgba(14,165,233,0.15);
+    position:relative;animation:pageIn 0.3s ease;
+  `;
+
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:1px;">ITEM ${saleRowCount}</div>
+      ${saleRowCount > 1 ? `<button onclick="removeSaleRow('${rowId}')" style="background:rgba(225,29,72,0.1);color:#e11d48;border:1px solid rgba(225,29,72,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;">✕ Remove</button>` : ''}
+    </div>
+
+    <div class="form-group" style="margin-bottom:8px;">
+      <label class="form-label">Select Product</label>
+      <select class="form-select" id="${rowId}_prod" onchange="onSaleProductChange('${rowId}')">
+        <option value="">-- Select Product --</option>
+        ${opts}
+      </select>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <div>
+        <label class="form-label">Quantity</label>
+        <input class="form-input" id="${rowId}_qty" type="number" placeholder="0" min="1" oninput="calcGrandTotal()" style="background:#fff;">
+      </div>
+      <div>
+        <label class="form-label">Rate (₹)</label>
+        <input class="form-input" id="${rowId}_rate" type="number" placeholder="0.00" oninput="calcGrandTotal()" style="background:#fff;">
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div id="${rowId}_stock" style="font-size:10px;color:var(--muted);"></div>
+      <div id="${rowId}_total" style="font-size:13px;font-weight:700;color:var(--green);"></div>
+    </div>
+  `;
+
+  container.appendChild(div);
+  calcGrandTotal();
+}
+
+function removeSaleRow(rowId) {
+  const el = document.getElementById(rowId);
+  if (el) el.remove();
+  calcGrandTotal();
+}
+
+function onSaleProductChange(rowId) {
+  const sel = document.getElementById(rowId + '_prod');
+  const opt = sel.options[sel.selectedIndex];
+  const stock = opt ? opt.getAttribute('data-stock') : 0;
+  const unit = opt ? opt.getAttribute('data-unit') : '';
+  const price = opt ? opt.getAttribute('data-price') : 0;
+
+  const stockDiv = document.getElementById(rowId + '_stock');
+  const rateInput = document.getElementById(rowId + '_rate');
+
+  if (opt && opt.value) {
+    stockDiv.innerHTML = `Available Stock: <b style="color:${stock <= 0 ? '#e11d48' : stock <= 5 ? '#d97706' : '#059669'}">${stock} ${unit}</b>`;
+    rateInput.value = price;
+  } else {
+    stockDiv.innerHTML = '';
+    rateInput.value = '';
+  }
+  calcGrandTotal();
+}
+
+function calcGrandTotal() {
+  const rows = document.querySelectorAll('[id^="srow_"]');
+  let grand = 0;
+  rows.forEach(row => {
+    const rowId = row.id;
+    const qty = parseFloat(document.getElementById(rowId + '_qty')?.value) || 0;
+    const rate = parseFloat(document.getElementById(rowId + '_rate')?.value) || 0;
+    const total = qty * rate;
+    const totalDiv = document.getElementById(rowId + '_total');
+    if (totalDiv) totalDiv.textContent = total > 0 ? '₹' + total.toLocaleString('en-IN') : '';
+    grand += total;
+  });
+  const grandDiv = document.getElementById('saleGrandTotal');
+  const grandAmt = document.getElementById('saleGrandTotalAmt');
+  if (grandDiv && grandAmt) {
+    grandDiv.style.display = grand > 0 ? 'block' : 'none';
+    grandAmt.textContent = '₹' + grand.toLocaleString('en-IN');
+  }
+}
+
+function fillSaleRate() {} // kept for compatibility
+function calcSaleTotal() {} // kept for compatibility
+
+// ===== ADD PURCHASE =====
+function addPurchase() {
+  const pid = document.getElementById('purProduct').value;
+  const qty = parseFloat(document.getElementById('purQty').value);
+  const rate = parseFloat(document.getElementById('purRate').value);
+  if (!qty||!rate) { showToast('❌ Enter quantity and rate!', '#f43f5e'); return; }
+  const p = products.find(x=>x.id==pid);
+  if (!p) { showToast('❌ Please select a product!', '#f43f5e'); return; }
+  p.stock += qty; p.buyPrice = rate;
+  transactions.push({
+    id:Date.now(), type:'purchase', productId:pid, productName:p.name,
+    party:document.getElementById('purVendor').value||'Unknown Vendor',
+    qty, rate, amount:qty*rate, unit:p.unit,
+    date:document.getElementById('purDate').value,
+    note:document.getElementById('purNote').value
+  });
+  save();
+  ['purVendor','purQty','purRate','purNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('purTotal').textContent='';
+  showToast(`✅ ${qty} ${p.unit} of ${p.name} purchased!`);
+}
+
+// ===== ADD SALE (Multi-Product) =====
+function addSale() {
+  const custName = document.getElementById('saleCust').value.trim();
+  const saleDate = document.getElementById('saleDate').value;
+  const saleNote = document.getElementById('saleNote').value;
+
+  if (!custName) { showToast('❌ Please enter customer name!', '#f43f5e'); return; }
+
+  const rows = document.querySelectorAll('[id^="srow_"]');
+  if (!rows.length) { showToast('❌ Please add at least one product!', '#f43f5e'); return; }
+
+  let savedCount = 0;
+  let errorMsg = '';
+
+  rows.forEach(row => {
+    const rowId = row.id;
+    const pid = document.getElementById(rowId + '_prod')?.value;
+    const qty = parseFloat(document.getElementById(rowId + '_qty')?.value);
+    const rate = parseFloat(document.getElementById(rowId + '_rate')?.value);
+    if (!pid || !qty || !rate) return;
+    const p = products.find(x => x.id == pid);
+    if (!p) return;
+    if (p.stock < qty) { errorMsg = `${p.name}: only ${p.stock} ${p.unit} available!`; return; }
+    p.stock -= qty;
+    transactions.push({
+      id: Date.now() + savedCount,
+      type: 'sale', productId: pid, productName: p.name,
+      party: custName, qty, rate, amount: qty * rate, unit: p.unit,
+      date: saleDate, note: saleNote
+    });
+    savedCount++;
+  });
+
+  if (errorMsg) { showToast('❌ ' + errorMsg, '#f43f5e'); return; }
+  if (savedCount === 0) { showToast('❌ Fill product, quantity and rate!', '#f43f5e'); return; }
+
+  saveCustomerName(custName);
+  save();
+
+  document.getElementById('saleCust').value = '';
+  document.getElementById('saleNote').value = '';
+  document.getElementById('saleRowsContainer').innerHTML = '';
+  document.getElementById('saleGrandTotal').style.display = 'none';
+  saleRowCount = 0;
+  addSaleRow();
+
+  showToast(`✅ ${savedCount} item${savedCount > 1 ? 's' : ''} sold to ${custName}!`);
+}
+
+// ===== RENDER TRANSACTIONS =====
+function renderTransactions() {
+  // Always read fresh from localStorage to sync across browser/PWA
+  transactions = JSON.parse(localStorage.getItem('at_transactions') || '[]');
+  const list = document.getElementById('txnList');
+  if (!transactions.length) {
+    list.innerHTML = `<div class="empty-state"><div class="e-icon">📋</div>No transactions yet</div>`;
+    return;
+  }
+  list.innerHTML = [...transactions].reverse().map(t => `
+    <div class="txn-card">
+      <div class="txn-left">
+        <div class="txn-icon ${t.type}">${t.type==='purchase'?'🛒':'💰'}</div>
+        <div>
+          <div class="txn-name">${t.productName}</div>
+          <div class="txn-sub">${t.party} &bull; ${t.date}</div>
+          <span class="txn-type-badge ${t.type==='purchase'?'tb-p':'tb-s'}">${t.type.toUpperCase()}</span>
+        </div>
+      </div>
+      <div class="txn-right">
+        <div class="txn-amount ${t.type}">${t.type==='sale'?'+':'-'}₹${t.amount.toLocaleString('en-IN')}</div>
+        <div class="txn-qty">${t.qty} ${t.unit||'units'} @ ₹${t.rate}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== RENDER DASHBOARD =====
+function renderDashboard() {
+  // Always read fresh from localStorage
+  transactions = JSON.parse(localStorage.getItem('at_transactions') || '[]');
+  products = JSON.parse(localStorage.getItem('at_products') || 'null') || EXCEL_PRODUCTS;
+  document.getElementById('totalProducts').textContent = products.length;
+  const today = now.toISOString().split('T')[0];
+  const todayT = transactions.filter(t=>t.date===today);
+  const sAmt = todayT.filter(t=>t.type==='sale').reduce((s,t)=>s+t.amount,0);
+  const pAmt = todayT.filter(t=>t.type==='purchase').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('todaySales').textContent = '₹'+sAmt.toLocaleString('en-IN');
+  document.getElementById('todayPurchase').textContent = '₹'+pAmt.toLocaleString('en-IN');
+  const low = products.filter(p=>p.stock<=p.minStock);
+  document.getElementById('lowStockCount').textContent = low.length;
+  const alerts = document.getElementById('alertsList');
+  if (!low.length) {
+    alerts.innerHTML = `<div class="empty-state" style="padding:16px"><div class="e-icon">✅</div>All products have sufficient stock</div>`;
+    return;
+  }
+  alerts.innerHTML = low.map(p=>`
+    <div class="alert-card">
+      <div><div class="alert-name">${p.name}</div><div class="alert-cat">${p.category}</div></div>
+      <div class="alert-right">
+        <div class="alert-qty">${p.stock}</div>
+        <div class="alert-unit">${p.unit} remaining</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== RENDER REPORTS =====
+function renderReports() {
+  const sales = transactions.filter(t=>t.type==='sale');
+  const purchases = transactions.filter(t=>t.type==='purchase');
+  const sAmt = sales.reduce((s,t)=>s+t.amount,0);
+  const pAmt = purchases.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('totalSalesAmt').textContent='₹'+sAmt.toLocaleString('en-IN');
+  document.getElementById('totalSalesTxn').textContent=sales.length;
+  document.getElementById('totalSalesQty').textContent=sales.reduce((s,t)=>s+t.qty,0);
+  document.getElementById('totalPurchaseAmt').textContent='₹'+pAmt.toLocaleString('en-IN');
+  document.getElementById('totalPurchaseTxn').textContent=purchases.length;
+  document.getElementById('totalPurchaseQty').textContent=purchases.reduce((s,t)=>s+t.qty,0);
+  const profit = sAmt - pAmt;
+  const pl = document.getElementById('profitLoss');
+  pl.textContent=(profit>=0?'+':'')+'₹'+profit.toLocaleString('en-IN');
+  pl.className='report-big '+(profit>=0?'pl-positive':'pl-negative');
+  document.getElementById('rTotalProds').textContent=products.length;
+  document.getElementById('rLowStock').textContent=products.filter(p=>p.stock>0&&p.stock<=p.minStock).length;
+  document.getElementById('rOutStock').textContent=products.filter(p=>p.stock<=0).length;
+}
+
+// ===== QUICK STOCK SEARCH =====
+let currentDetailProduct = null;
+
+function quickStockSearch() {
+  const q = document.getElementById('quickSearchInput').value.trim().toLowerCase();
+  const results = document.getElementById('quickSearchResults');
+  const clearBtn = document.getElementById('quickSearchClear');
+
+  clearBtn.style.display = q ? 'block' : 'none';
+
+  if (!q || q.length < 1) {
+    results.style.display = 'none';
+    return;
+  }
+
+  const matched = products.filter(p => p.name.toLowerCase().includes(q)).slice(0, 8);
+
+  if (!matched.length) {
+    results.style.display = 'block';
+    results.innerHTML = `<div style="padding:16px;text-align:center;color:#6b8db0;font-size:13px;">No product found</div>`;
+    return;
+  }
+
+  results.style.display = 'block';
+  results.innerHTML = matched.map(p => {
+    const isOut = p.stock <= 0;
+    const isLow = p.stock > 0 && p.stock <= p.minStock;
+    const color = isOut ? '#e11d48' : isLow ? '#d97706' : '#059669';
+    const icon = isOut ? '🔴' : isLow ? '🟡' : '🟢';
+    return `<div onclick="openStockDetail(${p.id})" style="
+      padding:12px 16px;border-bottom:1px solid rgba(14,165,233,0.08);
+      cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+      transition:background 0.15s;
+    " onmouseover="this.style.background='#f4f7fb'" onmouseout="this.style.background='#fff'">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#1e3a5f;">${p.name}</div>
+        <div style="font-size:10px;color:#6b8db0;margin-top:2px;">${p.category}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:${color};">${p.stock}</div>
+        <div style="font-size:10px;color:#6b8db0;">${p.unit} ${icon}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearQuickSearch() {
+  document.getElementById('quickSearchInput').value = '';
+  document.getElementById('quickSearchResults').style.display = 'none';
+  document.getElementById('quickSearchClear').style.display = 'none';
+}
+
+function openStockDetail(pid) {
+  const p = products.find(x => x.id == pid);
+  if (!p) return;
+  currentDetailProduct = p;
+
+  // Fill modal data
+  document.getElementById('sdProductName').textContent = p.name;
+
+  const stockEl = document.getElementById('sdStockNum');
+  const isOut = p.stock <= 0;
+  const isLow = p.stock > 0 && p.stock <= p.minStock;
+  stockEl.textContent = p.stock;
+  stockEl.style.color = isOut ? '#e11d48' : isLow ? '#d97706' : '#059669';
+
+  document.getElementById('sdUnit').textContent = p.unit;
+  document.getElementById('sdCat').textContent = p.category;
+  document.getElementById('sdMinStock').textContent = p.minStock + ' ' + p.unit;
+  document.getElementById('sdBuyPrice').textContent = p.buyPrice ? '₹' + p.buyPrice : 'N/A';
+  document.getElementById('sdSellPrice').textContent = p.sellPrice ? '₹' + p.sellPrice : 'N/A';
+  document.getElementById('sdStockValue').textContent = p.buyPrice ? '₹' + (p.stock * p.buyPrice).toLocaleString('en-IN') : 'N/A';
+
+  const badge = document.getElementById('sdStatusBadge');
+  if (isOut) {
+    badge.textContent = 'OUT OF STOCK';
+    badge.style.background = 'rgba(225,29,72,0.1)';
+    badge.style.color = '#e11d48';
+    badge.style.border = '1px solid rgba(225,29,72,0.3)';
+  } else if (isLow) {
+    badge.textContent = 'LOW STOCK';
+    badge.style.background = 'rgba(217,119,6,0.1)';
+    badge.style.color = '#d97706';
+    badge.style.border = '1px solid rgba(217,119,6,0.3)';
+  } else {
+    badge.textContent = 'IN STOCK ✓';
+    badge.style.background = 'rgba(5,150,105,0.1)';
+    badge.style.color = '#059669';
+    badge.style.border = '1px solid rgba(5,150,105,0.3)';
+  }
+
+  // Button actions
+  document.getElementById('sdPurchaseBtn').onclick = () => quickPurchaseFromDetail(p.id);
+  document.getElementById('sdSaleBtn').onclick = () => quickSaleFromDetail(p.id);
+
+  // Close search dropdown
+  clearQuickSearch();
+
+  // Show modal
+  document.getElementById('stockDetailModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeStockDetail() {
+  document.getElementById('stockDetailModal').style.display = 'none';
+  document.body.style.overflow = '';
+  currentDetailProduct = null;
+}
+
+function quickPurchaseFromDetail(pid) {
+  closeStockDetail();
+  showTab('purchase');
+  setTimeout(() => {
+    const sel = document.getElementById('purProduct');
+    if (sel) { sel.value = pid; }
+  }, 300);
+}
+
+function quickSaleFromDetail(pid) {
+  closeStockDetail();
+  showTab('sale');
+  setTimeout(() => {
+    const container = document.getElementById('saleRowsContainer');
+    if (container && container.children.length > 0) {
+      const firstRow = container.children[0];
+      const sel = firstRow.querySelector('select');
+      if (sel) { sel.value = pid; onSaleProductChange(firstRow.id); }
+    }
+  }, 300);
+}
+
+// Close stock detail on backdrop tap
+document.addEventListener('DOMContentLoaded', function() {
+  const sdModal = document.getElementById('stockDetailModal');
+  if (sdModal) {
+    sdModal.addEventListener('click', function(e) { if (e.target === sdModal) closeStockDetail(); });
+    sdModal.addEventListener('touchend', function(e) { if (e.target === sdModal) { e.preventDefault(); closeStockDetail(); } });
+  }
+  // Close search on outside click
+  document.addEventListener('click', function(e) {
+    const box = document.querySelector('.search-box');
+    const results = document.getElementById('quickSearchResults');
+    if (results && !results.contains(e.target) && e.target.id !== 'quickSearchInput') {
+      results.style.display = 'none';
+    }
+  });
+});
+
+// ===== LOW STOCK MODAL =====
+let modalFilter = 'all';
+
+function openLowStockModal() {
+  modalFilter = 'all';
+  const modal = document.getElementById('lowStockModal');
+  modal.style.display = 'block';
+  modal.style.animation = 'fadeIn 0.2s ease';
+  const inner = document.getElementById('lowStockModalInner');
+  inner.style.animation = 'slideUp 0.35s cubic-bezier(0.175,0.885,0.32,1.1)';
+  document.body.style.overflow = 'hidden';
+  renderModalList();
+}
+
+function closeLowStockModal() {
+  document.getElementById('lowStockModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close when tapping backdrop (outside modal inner)
+document.addEventListener('DOMContentLoaded', function() {
+  // Low stock card — works on both mobile touch and desktop click
+  const card = document.getElementById('lowStockCard');
+  if (card) {
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
+      openLowStockModal();
+    });
+    card.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      openLowStockModal();
+    });
+  }
+
+  // Backdrop tap to close
+  const modal = document.getElementById('lowStockModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeLowStockModal();
+    });
+    modal.addEventListener('touchend', function(e) {
+      if (e.target === modal) { e.preventDefault(); closeLowStockModal(); }
+    });
+  }
+});
+
+function filterModal(type) {
+  modalFilter = type;
+  // Update tab styles
+  ['all','out','low'].forEach(t => {
+    const btn = document.getElementById('ftab-'+t);
+    if (t === type) {
+      btn.style.color = '#0ea5e9';
+      btn.style.borderBottom = '2px solid #0ea5e9';
+    } else {
+      btn.style.color = '#6b8db0';
+      btn.style.borderBottom = '2px solid transparent';
+    }
+  });
+  renderModalList();
+}
+
+function renderModalList() {
+  const outOfStock = products.filter(p => p.stock <= 0);
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock);
+  const allLow = products.filter(p => p.stock <= p.minStock);
+
+  // Update summary counts
+  document.getElementById('modal-total-low').textContent = allLow.length;
+  document.getElementById('modal-out-count').textContent = outOfStock.length;
+  document.getElementById('modal-low-count').textContent = lowStock.length;
+  document.getElementById('modalSubtitle').textContent = `${allLow.length} items need attention`;
+
+  // Filter list
+  let list = modalFilter === 'out' ? outOfStock : modalFilter === 'low' ? lowStock : allLow;
+
+  // Sort: out of stock first, then by stock qty ascending
+  list = [...list].sort((a,b) => a.stock - b.stock);
+
+  const container = document.getElementById('modalList');
+  if (!list.length) {
+    container.innerHTML = `<div style="text-align:center;padding:30px;color:#6b8db0;font-size:13px;">
+      <div style="font-size:36px;margin-bottom:10px;">✅</div>
+      No items in this category
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = list.map((p, i) => {
+    const isOut = p.stock <= 0;
+    const pct = isOut ? 0 : Math.min(100, Math.round((p.stock / (p.minStock * 3)) * 100));
+    const barColor = isOut ? '#e11d48' : p.stock <= p.minStock * 0.5 ? '#e11d48' : '#d97706';
+    return `
+    <div style="
+      background:#fff; border-radius:12px; padding:13px 14px; margin-bottom:8px;
+      border:1px solid ${isOut ? 'rgba(225,29,72,0.2)' : 'rgba(217,119,6,0.2)'};
+      box-shadow:0 2px 8px rgba(14,165,233,0.05);
+    ">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+        <div style="flex:1;margin-right:10px;">
+          <div style="font-size:13px;font-weight:700;color:#1e3a5f;line-height:1.3;">${p.name}</div>
+          <div style="font-size:10px;color:#6b8db0;margin-top:2px;">${p.category} &bull; ${p.unit}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Orbitron',monospace;font-size:20px;font-weight:700;color:${barColor};line-height:1;">${p.stock}</div>
+          <div style="font-size:9px;color:#6b8db0;margin-top:1px;">${p.unit}</div>
+          <span style="
+            font-size:9px;padding:2px 8px;border-radius:20px;font-weight:700;
+            display:inline-block;margin-top:3px;
+            background:${isOut ? 'rgba(225,29,72,0.1)' : 'rgba(217,119,6,0.1)'};
+            color:${isOut ? '#e11d48' : '#d97706'};
+            border:1px solid ${isOut ? 'rgba(225,29,72,0.3)' : 'rgba(217,119,6,0.3)'};
+          ">${isOut ? 'OUT OF STOCK' : 'LOW STOCK'}</span>
+        </div>
+      </div>
+      <!-- Progress Bar -->
+      <div style="background:#eef2f7;border-radius:10px;height:5px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:${barColor};border-radius:10px;transition:width 0.5s ease;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="font-size:9px;color:#6b8db0;">Current: <b style="color:#1e3a5f;">${p.stock}</b></span>
+        <span style="font-size:9px;color:#6b8db0;">Min Required: <b style="color:#1e3a5f;">${p.minStock}</b></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== EXCEL IMPORT =====
+function importExcel(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const lines = e.target.result.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      let imported = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        if (!cols[0] || !cols[0].trim()) continue;
+        const name = cols[0].trim().replace(/['"]/g,'');
+        const qty = parseFloat(cols[1]) || 0;
+        const unit = (cols[2] || 'NOS').trim().replace(/['"]/g,'');
+        const price = parseFloat(cols[3]) || 0;
+        if (name && !products.find(p => p.name.toUpperCase() === name.toUpperCase())) {
+          products.push({
+            id: Date.now() + i,
+            name: name.toUpperCase(),
+            category: 'Imported',
+            unit: unit || 'NOS',
+            buyPrice: price,
+            sellPrice: Math.round(price * 1.15),
+            stock: qty,
+            minStock: 5
+          });
+          imported++;
+        }
+      }
+      save();
+      renderProducts();
+      showToast(`✅ ${imported} products imported!`);
+    };
+    reader.readAsText(file);
+  } else {
+    showToast('⚠️ CSV format use karein! Excel ko CSV me save karke upload karein.', '#f59e0b');
+  }
+  input.value = '';
+}
+
+function resetToExcel() {
+  if (!confirm('Kya aap chahte hain ki original Excel data restore ho jaaye?')) return;
+  products = [...EXCEL_PRODUCTS];
+  save();
+  renderProducts();
+  showToast('✅ Original Excel data restore ho gaya!');
+}
+
+// INIT
+renderDashboard();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registered'))
+      .catch(err => console.log('SW error:', err));
+  });
+}
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => {
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'flex';
+  }, 3000);
+});
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'none';
+});
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      document.getElementById('installBtn').style.display = 'none';
+      deferredPrompt = null;
+    });
+  }
+}
+</script>
+
+<!-- ===== LOW STOCK MODAL ===== -->
+<div id="lowStockModal" style="
+  display:none; position:fixed; inset:0; z-index:9990;
+  background:rgba(10,30,64,0.6); backdrop-filter:blur(6px);
+">
+  <div id="lowStockModalInner" style="
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:430px;
+    background:#ffffff; border-radius:24px 24px 0 0;
+    max-height:88vh; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:0 -8px 40px rgba(14,165,233,0.2);
+  ">
+
+    <!-- Modal Header -->
+    <div style="
+      background:linear-gradient(135deg,#0a1e40,#0d2a5e);
+      padding:18px 20px 14px; border-radius:24px 24px 0 0;
+      display:flex; align-items:center; justify-content:space-between;
+    ">
+      <div>
+        <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#38bdf8;letter-spacing:1px;">⚠ LOW STOCK REPORT</div>
+        <div style="font-size:11px;color:rgba(180,220,248,0.6);margin-top:3px;" id="modalSubtitle">Loading...</div>
+      </div>
+      <button onclick="closeLowStockModal()" style="
+        width:32px;height:32px;border-radius:50%;background:rgba(56,189,248,0.15);
+        border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-size:16px;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;
+        -webkit-tap-highlight-color:transparent;
+      ">✕</button>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div style="display:flex;gap:0;background:#f4f7fb;border-bottom:1px solid rgba(14,165,233,0.1);">
+      <button id="ftab-all" onclick="filterModal('all')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#0ea5e9;border-bottom:2px solid #0ea5e9;-webkit-tap-highlight-color:transparent;">All</button>
+      <button id="ftab-out" onclick="filterModal('out')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent;">Out of Stock</button>
+      <button id="ftab-low" onclick="filterModal('low')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent;">Low Stock</button>
+    </div>
+
+    <!-- Summary Bar -->
+    <div style="display:flex;gap:0;background:#fff;border-bottom:1px solid rgba(14,165,233,0.08);">
+      <div style="flex:1;padding:10px;text-align:center;border-right:1px solid rgba(14,165,233,0.08);">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#e11d48;" id="modal-total-low">0</div>
+        <div style="font-size:9px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Total Low</div>
+      </div>
+      <div style="flex:1;padding:10px;text-align:center;border-right:1px solid rgba(14,165,233,0.08);">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#e11d48;" id="modal-out-count">0</div>
+        <div style="font-size:9px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Out of Stock</div>
+      </div>
+      <div style="flex:1;padding:10px;text-align:center;">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#d97706;" id="modal-low-count">0</div>
+        <div style="font-size:9px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Low Stock</div>
+      </div>
+    </div>
+
+    <!-- Product List -->
+    <div id="modalList" style="overflow-y:auto;flex:1;padding:12px 14px 20px;"></div>
+
+  </div>
+</div>
+
+<style>
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(100%); }
+  to { transform: translateX(-50%) translateY(0); }
+}
+</style>
+
+<div id="installBtn" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0a1e40,#0d2a5e);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);border-radius:30px;padding:10px 22px;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(10,30,64,0.3);align-items:center;gap:8px;white-space:nowrap;" onclick="installApp()">
+  📲 &nbsp;Add to Home Screen
+</div>
+</body>
+</html>
