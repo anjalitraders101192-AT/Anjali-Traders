@@ -591,7 +591,7 @@ body::before {
         <div class="stat-value cv-yellow" id="todayPurchase">₹0</div>
         <div class="stat-sub">Spent today</div>
       </div>
-      <div class="stat-card" data-icon="⚠️" onclick="openLowStockModal()" style="cursor:pointer;" title="Click to view details">
+      <div class="stat-card" data-icon="⚠️" id="lowStockCard" style="cursor:pointer;" title="Click to view details">
         <div class="glint"></div>
         <div class="stat-label">Low Stock</div>
         <div class="stat-value cv-red" id="lowStockCount">0</div>
@@ -1285,15 +1285,44 @@ function openLowStockModal() {
   modalFilter = 'all';
   const modal = document.getElementById('lowStockModal');
   modal.style.display = 'block';
+  modal.style.animation = 'fadeIn 0.2s ease';
+  const inner = document.getElementById('lowStockModalInner');
+  inner.style.animation = 'slideUp 0.35s cubic-bezier(0.175,0.885,0.32,1.1)';
   document.body.style.overflow = 'hidden';
   renderModalList();
 }
 
-function closeLowStockModal(e) {
-  if (e && e.target !== document.getElementById('lowStockModal') && e.type !== 'click') return;
+function closeLowStockModal() {
   document.getElementById('lowStockModal').style.display = 'none';
   document.body.style.overflow = '';
 }
+
+// Close when tapping backdrop (outside modal inner)
+document.addEventListener('DOMContentLoaded', function() {
+  // Low stock card — works on both mobile touch and desktop click
+  const card = document.getElementById('lowStockCard');
+  if (card) {
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
+      openLowStockModal();
+    });
+    card.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      openLowStockModal();
+    });
+  }
+
+  // Backdrop tap to close
+  const modal = document.getElementById('lowStockModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeLowStockModal();
+    });
+    modal.addEventListener('touchend', function(e) {
+      if (e.target === modal) { e.preventDefault(); closeLowStockModal(); }
+    });
+  }
+});
 
 function filterModal(type) {
   modalFilter = type;
@@ -1468,17 +1497,15 @@ function installApp() {
 <div id="lowStockModal" style="
   display:none; position:fixed; inset:0; z-index:9990;
   background:rgba(10,30,64,0.6); backdrop-filter:blur(6px);
-  animation: fadeIn 0.2s ease;
-" onclick="closeLowStockModal(event)">
-  <div style="
+">
+  <div id="lowStockModalInner" style="
     position:absolute; bottom:0; left:50%; transform:translateX(-50%);
     width:100%; max-width:430px;
     background:#ffffff; border-radius:24px 24px 0 0;
     max-height:88vh; overflow:hidden;
     display:flex; flex-direction:column;
     box-shadow:0 -8px 40px rgba(14,165,233,0.2);
-    animation: slideUp 0.35s cubic-bezier(0.175,0.885,0.32,1.1);
-  " onclick="event.stopPropagation()">
+  ">
 
     <!-- Modal Header -->
     <div style="
@@ -1494,14 +1521,15 @@ function installApp() {
         width:32px;height:32px;border-radius:50%;background:rgba(56,189,248,0.15);
         border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-size:16px;
         cursor:pointer;display:flex;align-items:center;justify-content:center;
+        -webkit-tap-highlight-color:transparent;
       ">✕</button>
     </div>
 
     <!-- Filter Tabs -->
     <div style="display:flex;gap:0;background:#f4f7fb;border-bottom:1px solid rgba(14,165,233,0.1);">
-      <button id="ftab-all" onclick="filterModal('all')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#0ea5e9;border-bottom:2px solid #0ea5e9;">All</button>
-      <button id="ftab-out" onclick="filterModal('out')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;">Out of Stock</button>
-      <button id="ftab-low" onclick="filterModal('low')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;">Low Stock</button>
+      <button id="ftab-all" onclick="filterModal('all')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#0ea5e9;border-bottom:2px solid #0ea5e9;-webkit-tap-highlight-color:transparent;">All</button>
+      <button id="ftab-out" onclick="filterModal('out')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent;">Out of Stock</button>
+      <button id="ftab-low" onclick="filterModal('low')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent;">Low Stock</button>
     </div>
 
     <!-- Summary Bar -->
