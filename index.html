@@ -591,11 +591,11 @@ body::before {
         <div class="stat-value cv-yellow" id="todayPurchase">₹0</div>
         <div class="stat-sub">Spent today</div>
       </div>
-      <div class="stat-card" data-icon="⚠️">
+      <div class="stat-card" data-icon="⚠️" onclick="openLowStockModal()" style="cursor:pointer;" title="Click to view details">
         <div class="glint"></div>
         <div class="stat-label">Low Stock</div>
         <div class="stat-value cv-red" id="lowStockCount">0</div>
-        <div class="stat-sub">Need reorder</div>
+        <div class="stat-sub" style="color:var(--sky);font-weight:700;">👆 Tap for details</div>
       </div>
     </div>
 
@@ -1138,6 +1138,104 @@ function renderReports() {
   document.getElementById('rOutStock').textContent=products.filter(p=>p.stock<=0).length;
 }
 
+// ===== LOW STOCK MODAL =====
+let modalFilter = 'all';
+
+function openLowStockModal() {
+  modalFilter = 'all';
+  const modal = document.getElementById('lowStockModal');
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  renderModalList();
+}
+
+function closeLowStockModal(e) {
+  if (e && e.target !== document.getElementById('lowStockModal') && e.type !== 'click') return;
+  document.getElementById('lowStockModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function filterModal(type) {
+  modalFilter = type;
+  // Update tab styles
+  ['all','out','low'].forEach(t => {
+    const btn = document.getElementById('ftab-'+t);
+    if (t === type) {
+      btn.style.color = '#0ea5e9';
+      btn.style.borderBottom = '2px solid #0ea5e9';
+    } else {
+      btn.style.color = '#6b8db0';
+      btn.style.borderBottom = '2px solid transparent';
+    }
+  });
+  renderModalList();
+}
+
+function renderModalList() {
+  const outOfStock = products.filter(p => p.stock <= 0);
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.minStock);
+  const allLow = products.filter(p => p.stock <= p.minStock);
+
+  // Update summary counts
+  document.getElementById('modal-total-low').textContent = allLow.length;
+  document.getElementById('modal-out-count').textContent = outOfStock.length;
+  document.getElementById('modal-low-count').textContent = lowStock.length;
+  document.getElementById('modalSubtitle').textContent = `${allLow.length} items need attention`;
+
+  // Filter list
+  let list = modalFilter === 'out' ? outOfStock : modalFilter === 'low' ? lowStock : allLow;
+
+  // Sort: out of stock first, then by stock qty ascending
+  list = [...list].sort((a,b) => a.stock - b.stock);
+
+  const container = document.getElementById('modalList');
+  if (!list.length) {
+    container.innerHTML = `<div style="text-align:center;padding:30px;color:#6b8db0;font-size:13px;">
+      <div style="font-size:36px;margin-bottom:10px;">✅</div>
+      No items in this category
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = list.map((p, i) => {
+    const isOut = p.stock <= 0;
+    const pct = isOut ? 0 : Math.min(100, Math.round((p.stock / (p.minStock * 3)) * 100));
+    const barColor = isOut ? '#e11d48' : p.stock <= p.minStock * 0.5 ? '#e11d48' : '#d97706';
+    return `
+    <div style="
+      background:#fff; border-radius:12px; padding:13px 14px; margin-bottom:8px;
+      border:1px solid ${isOut ? 'rgba(225,29,72,0.2)' : 'rgba(217,119,6,0.2)'};
+      box-shadow:0 2px 8px rgba(14,165,233,0.05);
+    ">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+        <div style="flex:1;margin-right:10px;">
+          <div style="font-size:13px;font-weight:700;color:#1e3a5f;line-height:1.3;">${p.name}</div>
+          <div style="font-size:10px;color:#6b8db0;margin-top:2px;">${p.category} &bull; ${p.unit}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Orbitron',monospace;font-size:20px;font-weight:700;color:${barColor};line-height:1;">${p.stock}</div>
+          <div style="font-size:9px;color:#6b8db0;margin-top:1px;">${p.unit}</div>
+          <span style="
+            font-size:9px;padding:2px 8px;border-radius:20px;font-weight:700;
+            display:inline-block;margin-top:3px;
+            background:${isOut ? 'rgba(225,29,72,0.1)' : 'rgba(217,119,6,0.1)'};
+            color:${isOut ? '#e11d48' : '#d97706'};
+            border:1px solid ${isOut ? 'rgba(225,29,72,0.3)' : 'rgba(217,119,6,0.3)'};
+          ">${isOut ? 'OUT OF STOCK' : 'LOW STOCK'}</span>
+        </div>
+      </div>
+      <!-- Progress Bar -->
+      <div style="background:#eef2f7;border-radius:10px;height:5px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:${barColor};border-radius:10px;transition:width 0.5s ease;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <span style="font-size:9px;color:#6b8db0;">Current: <b style="color:#1e3a5f;">${p.stock}</b></span>
+        <span style="font-size:9px;color:#6b8db0;">Min Required: <b style="color:#1e3a5f;">${p.minStock}</b></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // ===== EXCEL IMPORT =====
 function importExcel(input) {
   const file = input.files[0];
@@ -1226,7 +1324,74 @@ function installApp() {
 }
 </script>
 
-<div id="installBtn" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0a1e40,#0d2a5e);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);border-radius:30px;padding:10px 22px;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(10,30,64,0.3);align-items:center;gap:8px;white-space:nowrap;" onclick="installApp()">
+<!-- ===== LOW STOCK MODAL ===== -->
+<div id="lowStockModal" style="
+  display:none; position:fixed; inset:0; z-index:9990;
+  background:rgba(10,30,64,0.6); backdrop-filter:blur(6px);
+  animation: fadeIn 0.2s ease;
+" onclick="closeLowStockModal(event)">
+  <div style="
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:430px;
+    background:#ffffff; border-radius:24px 24px 0 0;
+    max-height:88vh; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:0 -8px 40px rgba(14,165,233,0.2);
+    animation: slideUp 0.35s cubic-bezier(0.175,0.885,0.32,1.1);
+  " onclick="event.stopPropagation()">
+
+    <!-- Modal Header -->
+    <div style="
+      background:linear-gradient(135deg,#0a1e40,#0d2a5e);
+      padding:18px 20px 14px; border-radius:24px 24px 0 0;
+      display:flex; align-items:center; justify-content:space-between;
+    ">
+      <div>
+        <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:#38bdf8;letter-spacing:1px;">⚠ LOW STOCK REPORT</div>
+        <div style="font-size:11px;color:rgba(180,220,248,0.6);margin-top:3px;" id="modalSubtitle">Loading...</div>
+      </div>
+      <button onclick="closeLowStockModal()" style="
+        width:32px;height:32px;border-radius:50%;background:rgba(56,189,248,0.15);
+        border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-size:16px;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;
+      ">✕</button>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div style="display:flex;gap:0;background:#f4f7fb;border-bottom:1px solid rgba(14,165,233,0.1);">
+      <button id="ftab-all" onclick="filterModal('all')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#0ea5e9;border-bottom:2px solid #0ea5e9;">All</button>
+      <button id="ftab-out" onclick="filterModal('out')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;">Out of Stock</button>
+      <button id="ftab-low" onclick="filterModal('low')" style="flex:1;padding:10px;font-size:11px;font-weight:700;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;text-transform:uppercase;border:none;background:none;cursor:pointer;color:#6b8db0;border-bottom:2px solid transparent;">Low Stock</button>
+    </div>
+
+    <!-- Summary Bar -->
+    <div style="display:flex;gap:0;background:#fff;border-bottom:1px solid rgba(14,165,233,0.08);">
+      <div style="flex:1;padding:10px;text-align:center;border-right:1px solid rgba(14,165,233,0.08);">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#e11d48;" id="modal-total-low">0</div>
+        <div style="font-size:9px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Total Low</div>
+      </div>
+      <div style="flex:1;padding:10px;text-align:center;border-right:1px solid rgba(14,165,233,0.08);">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#e11d48;" id="modal-out-count">0</div>
+        <div style="font-size:9px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Out of Stock</div>
+      </div>
+      <div style="flex:1;padding:10px;text-align:center;">
+        <div style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#d97706;" id="modal-low-count">0</div>
+        <div style="font-size:9px;color:#6b8db0;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Low Stock</div>
+      </div>
+    </div>
+
+    <!-- Product List -->
+    <div id="modalList" style="overflow-y:auto;flex:1;padding:12px 14px 20px;"></div>
+
+  </div>
+</div>
+
+<style>
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(100%); }
+  to { transform: translateX(-50%) translateY(0); }
+}
+</style>position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0a1e40,#0d2a5e);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);border-radius:30px;padding:10px 22px;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(10,30,64,0.3);align-items:center;gap:8px;white-space:nowrap;" onclick="installApp()">
   📲 &nbsp;Add to Home Screen
 </div>
 </body>
