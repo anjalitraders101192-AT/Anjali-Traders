@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anjali Traders - Inventory</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a1e40">
@@ -731,35 +731,54 @@ body::before {
   <div class="page" id="page-sale">
     <div class="form-card">
       <div class="form-title">💰 New Sale Entry</div>
+
+      <!-- Customer Name -->
       <div class="form-group">
         <label class="form-label">Customer Name</label>
         <input class="form-input" id="saleCust" list="customerList" placeholder="Type or select customer..." autocomplete="off">
         <datalist id="customerList"></datalist>
         <div style="font-size:10px;color:var(--green);margin-top:4px;letter-spacing:0.5px;">✅ New customer will be auto-saved</div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Select Product</label>
-        <select class="form-select" id="saleProduct" onchange="fillSaleRate()"></select>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Quantity</label>
-          <input class="form-input" id="saleQty" type="number" placeholder="0" oninput="calcSaleTotal()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Rate per Unit (₹)</label>
-          <input class="form-input" id="saleRate" type="number" placeholder="0.00" oninput="calcSaleTotal()">
-        </div>
-      </div>
+
+      <!-- Date -->
       <div class="form-group">
         <label class="form-label">Date</label>
         <input class="form-input" id="saleDate" type="date">
       </div>
+
+      <!-- Products Section Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--sky);letter-spacing:1px;text-transform:uppercase;">◈ Products</div>
+        <button onclick="addSaleRow()" style="
+          background:linear-gradient(135deg,#059669,#10b981);
+          color:#fff;border:none;border-radius:20px;
+          padding:6px 14px;font-size:11px;font-weight:700;
+          cursor:pointer;font-family:'Exo 2',sans-serif;
+          letter-spacing:0.5px;display:flex;align-items:center;gap:5px;
+          box-shadow:0 2px 8px rgba(5,150,105,0.3);
+        ">➕ Add Product</button>
+      </div>
+
+      <!-- Dynamic Product Rows -->
+      <div id="saleRowsContainer"></div>
+
+      <!-- Grand Total -->
+      <div id="saleGrandTotal" style="
+        text-align:right;padding:10px 14px;
+        background:linear-gradient(135deg,rgba(5,150,105,0.08),rgba(5,150,105,0.04));
+        border-radius:10px;border:1px solid rgba(5,150,105,0.15);
+        margin-bottom:14px;display:none;
+      ">
+        <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Grand Total</div>
+        <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--green);" id="saleGrandTotalAmt">₹0</div>
+      </div>
+
+      <!-- Remarks -->
       <div class="form-group">
         <label class="form-label">Remarks (Optional)</label>
         <input class="form-input" id="saleNote" placeholder="Any notes...">
       </div>
-      <div id="saleTotal" style="text-align:right;color:var(--green);font-size:13px;margin-bottom:12px;font-weight:600;letter-spacing:0.5px;"></div>
+
       <button class="btn-success" onclick="addSale()">✓ Save Sale</button>
     </div>
   </div>
@@ -998,27 +1017,122 @@ function renderProducts() {
 function fillProductDropdowns() {
   updateVendorDatalist();
   updateCustomerDatalist();
-  ['purProduct','saleProduct'].forEach(id => {
-    const sel = document.getElementById(id);
+  // Only fill purchase dropdown (sale now uses dynamic rows)
+  const sel = document.getElementById('purProduct');
+  if (sel) {
     sel.innerHTML = products.length
-      ? products.map(p=>`<option value="${p.id}">${p.name} (${p.stock} ${p.unit})</option>`).join('')
+      ? products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')
       : '<option>Please add products first</option>';
+  }
+  // Init sale rows if empty
+  if (document.getElementById('saleRowsContainer') && document.getElementById('saleRowsContainer').children.length === 0) {
+    addSaleRow();
+  }
+}
+
+// ===== MULTI-PRODUCT SALE ROWS =====
+let saleRowCount = 0;
+
+function addSaleRow() {
+  saleRowCount++;
+  const rowId = 'srow_' + saleRowCount;
+  const container = document.getElementById('saleRowsContainer');
+
+  const opts = products.map(p =>
+    `<option value="${p.id}" data-stock="${p.stock}" data-unit="${p.unit}" data-price="${p.sellPrice}">${p.name}</option>`
+  ).join('');
+
+  const div = document.createElement('div');
+  div.id = rowId;
+  div.style.cssText = `
+    background:#f4f7fb;border-radius:12px;padding:12px;
+    margin-bottom:10px;border:1px solid rgba(14,165,233,0.15);
+    position:relative;animation:pageIn 0.3s ease;
+  `;
+
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-size:10px;font-weight:700;color:var(--sky);letter-spacing:1px;">ITEM ${saleRowCount}</div>
+      ${saleRowCount > 1 ? `<button onclick="removeSaleRow('${rowId}')" style="background:rgba(225,29,72,0.1);color:#e11d48;border:1px solid rgba(225,29,72,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;">✕ Remove</button>` : ''}
+    </div>
+
+    <div class="form-group" style="margin-bottom:8px;">
+      <label class="form-label">Select Product</label>
+      <select class="form-select" id="${rowId}_prod" onchange="onSaleProductChange('${rowId}')">
+        <option value="">-- Select Product --</option>
+        ${opts}
+      </select>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <div>
+        <label class="form-label">Quantity</label>
+        <input class="form-input" id="${rowId}_qty" type="number" placeholder="0" min="1" oninput="calcGrandTotal()" style="background:#fff;">
+      </div>
+      <div>
+        <label class="form-label">Rate (₹)</label>
+        <input class="form-input" id="${rowId}_rate" type="number" placeholder="0.00" oninput="calcGrandTotal()" style="background:#fff;">
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div id="${rowId}_stock" style="font-size:10px;color:var(--muted);"></div>
+      <div id="${rowId}_total" style="font-size:13px;font-weight:700;color:var(--green);"></div>
+    </div>
+  `;
+
+  container.appendChild(div);
+  calcGrandTotal();
+}
+
+function removeSaleRow(rowId) {
+  const el = document.getElementById(rowId);
+  if (el) el.remove();
+  calcGrandTotal();
+}
+
+function onSaleProductChange(rowId) {
+  const sel = document.getElementById(rowId + '_prod');
+  const opt = sel.options[sel.selectedIndex];
+  const stock = opt ? opt.getAttribute('data-stock') : 0;
+  const unit = opt ? opt.getAttribute('data-unit') : '';
+  const price = opt ? opt.getAttribute('data-price') : 0;
+
+  const stockDiv = document.getElementById(rowId + '_stock');
+  const rateInput = document.getElementById(rowId + '_rate');
+
+  if (opt && opt.value) {
+    stockDiv.innerHTML = `Available Stock: <b style="color:${stock <= 0 ? '#e11d48' : stock <= 5 ? '#d97706' : '#059669'}">${stock} ${unit}</b>`;
+    rateInput.value = price;
+  } else {
+    stockDiv.innerHTML = '';
+    rateInput.value = '';
+  }
+  calcGrandTotal();
+}
+
+function calcGrandTotal() {
+  const rows = document.querySelectorAll('[id^="srow_"]');
+  let grand = 0;
+  rows.forEach(row => {
+    const rowId = row.id;
+    const qty = parseFloat(document.getElementById(rowId + '_qty')?.value) || 0;
+    const rate = parseFloat(document.getElementById(rowId + '_rate')?.value) || 0;
+    const total = qty * rate;
+    const totalDiv = document.getElementById(rowId + '_total');
+    if (totalDiv) totalDiv.textContent = total > 0 ? '₹' + total.toLocaleString('en-IN') : '';
+    grand += total;
   });
-  if (products.length) { fillSaleRate(); }
+  const grandDiv = document.getElementById('saleGrandTotal');
+  const grandAmt = document.getElementById('saleGrandTotalAmt');
+  if (grandDiv && grandAmt) {
+    grandDiv.style.display = grand > 0 ? 'block' : 'none';
+    grandAmt.textContent = '₹' + grand.toLocaleString('en-IN');
+  }
 }
 
-function fillSaleRate() {
-  const pid = document.getElementById('saleProduct').value;
-  const p = products.find(x=>x.id==pid);
-  if (p) { document.getElementById('saleRate').value = p.sellPrice; calcSaleTotal(); }
-}
-
-function calcSaleTotal() {
-  const qty = parseFloat(document.getElementById('saleQty').value)||0;
-  const rate = parseFloat(document.getElementById('saleRate').value)||0;
-  const total = qty * rate;
-  document.getElementById('saleTotal').textContent = total>0 ? `Total Amount: ₹${total.toLocaleString('en-IN')}` : '';
-}
+function fillSaleRate() {} // kept for compatibility
+function calcSaleTotal() {} // kept for compatibility
 
 // ===== ADD PURCHASE =====
 function addPurchase() {
@@ -1042,27 +1156,53 @@ function addPurchase() {
   showToast(`✅ ${qty} ${p.unit} of ${p.name} purchased!`);
 }
 
-// ===== ADD SALE =====
+// ===== ADD SALE (Multi-Product) =====
 function addSale() {
-  const pid = document.getElementById('saleProduct').value;
-  const qty = parseFloat(document.getElementById('saleQty').value);
-  const rate = parseFloat(document.getElementById('saleRate').value);
-  if (!qty||!rate) { showToast('❌ Enter quantity and rate!', '#f43f5e'); return; }
-  const p = products.find(x=>x.id==pid);
-  if (!p) { showToast('❌ Please select a product!', '#f43f5e'); return; }
-  if (p.stock < qty) { showToast(`❌ Only ${p.stock} ${p.unit} in stock!`, '#f43f5e'); return; }
-  p.stock -= qty;
-  transactions.push({
-    id:Date.now(), type:'sale', productId:pid, productName:p.name,
-    party:document.getElementById('saleCust').value||'Walk-in Customer',
-    qty, rate, amount:qty*rate, unit:p.unit,
-    date:document.getElementById('saleDate').value,
-    note:document.getElementById('saleNote').value
+  const custName = document.getElementById('saleCust').value.trim();
+  const saleDate = document.getElementById('saleDate').value;
+  const saleNote = document.getElementById('saleNote').value;
+
+  if (!custName) { showToast('❌ Please enter customer name!', '#f43f5e'); return; }
+
+  const rows = document.querySelectorAll('[id^="srow_"]');
+  if (!rows.length) { showToast('❌ Please add at least one product!', '#f43f5e'); return; }
+
+  let savedCount = 0;
+  let errorMsg = '';
+
+  rows.forEach(row => {
+    const rowId = row.id;
+    const pid = document.getElementById(rowId + '_prod')?.value;
+    const qty = parseFloat(document.getElementById(rowId + '_qty')?.value);
+    const rate = parseFloat(document.getElementById(rowId + '_rate')?.value);
+    if (!pid || !qty || !rate) return;
+    const p = products.find(x => x.id == pid);
+    if (!p) return;
+    if (p.stock < qty) { errorMsg = `${p.name}: only ${p.stock} ${p.unit} available!`; return; }
+    p.stock -= qty;
+    transactions.push({
+      id: Date.now() + savedCount,
+      type: 'sale', productId: pid, productName: p.name,
+      party: custName, qty, rate, amount: qty * rate, unit: p.unit,
+      date: saleDate, note: saleNote
+    });
+    savedCount++;
   });
+
+  if (errorMsg) { showToast('❌ ' + errorMsg, '#f43f5e'); return; }
+  if (savedCount === 0) { showToast('❌ Fill product, quantity and rate!', '#f43f5e'); return; }
+
+  saveCustomerName(custName);
   save();
-  ['saleCust','saleQty','saleNote'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('saleTotal').textContent='';
-  showToast(`✅ ${qty} ${p.unit} of ${p.name} sold!`);
+
+  document.getElementById('saleCust').value = '';
+  document.getElementById('saleNote').value = '';
+  document.getElementById('saleRowsContainer').innerHTML = '';
+  document.getElementById('saleGrandTotal').style.display = 'none';
+  saleRowCount = 0;
+  addSaleRow();
+
+  showToast(`✅ ${savedCount} item${savedCount > 1 ? 's' : ''} sold to ${custName}!`);
 }
 
 // ===== RENDER TRANSACTIONS =====
